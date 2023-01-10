@@ -1,0 +1,21 @@
+
+
+---------------------------------------------------------------------
+
+*** PSY trials mode -- version=4.65 (after Feb 2 2021) W7-VC++2010 CP=ADAR  *** 1673255800 ST#-5800   Mon Jan 09 11:16:40 2023
+ 
+PF#-5800 pname=D:\Dropbox\Proj-Olga\Other_proj\SigalShachar\4dots Jan 09 11:16:40 2023@ #T show pictures for memerizing - size effect@MonitorDX=52@bgamp=0 70 0@//FRAME=1 DX=1000 DY=800@//gamma=1@@eyetrack=E																									@t.trigger=E  t.triggerstr=$cmnt@@//{---general timing-----}@fixdu1st=0 fixdu=0 preisi=0 ISI-postisi-tdu  postisi=0  -t.du randisi=0 1000 interisi=0  ///   @keywait=5 @@//{---staircase & block control-----}@stair=0 numIFC=1 expmode=i 0 percent1st=100  @ Border=U r R  Bset=0 Bmix=N  Bsetorder=U R@@@//{---general-----}@sitdist=0.6 cmnt=x   feedback=0  @msg=Watch!!@@//--fixation++---@c.mode=0 b.mode=0 m.mode=0 f.mode=0 @//{---target----}@t.asis=1 t.amp=100 t.mode=F t.du=3000 t.soa=0 t.eye=M t.x=0 t.y=0 t.scale=1 t.or=0 t.gor=0@lbl=0@max_trials=2 @bset=1 gx=4dots@@t.dir=D:\Dropbox\Proj-Olga\Other_proj\SigalShachar\    t.fname=trail1.ppm     cmnt=4dots    #go    @
+
+Display: Width=52.0 cm  Res=1920x1080 / ~46.86x27.40 deg 1-cm=0.955 deg 1-pix~=0.0244 deg 1-deg~=39 pix  tscale0=1.0 pix. (38.67 cpd)  RefRate=100 Hz (10.000 ms)
+
+*** Key trigger came at startses=11:16:54.507  13.942 sec after session start MR#-5800
+0.136   1 8604 0+    0 B#0-5800  1 $8.788   1 9290 0+    1 B#0-5800  1 $
+ 4.00  1.00 ( 1.#R ) BR#0-5800 Jan 09 11:16  [   RT=9999 (rter=0 rt0=0 rt1=0 rtse=0 rtsd=0 rtall=0 rtase=0 rtief=0.00 ) DP=1.#R ( dper=1.#R Nhit= 2 Nfa= 0  Ns= 2 Nn= 0 phit=1.00 pfa=-1.#J Zh=1.15 Zf=1.#R cr=1.#R cre=1.#R cp=-1.#J cpe=0.00 beta=1.#R ) blockn= 0 blocksn= 0 time= 18  ntrial=  2 %n1=100  nerr=  0  %skip=  0  %e1=  0 %e2=  0 %e3=  0 %e4=  0  ]  S#1673255800  pname=D:\Dropbox\Proj-Olga\Other_proj\SigalShachar\4dots lname=SHACHAR1-4dots sitdist=0.60 fixcont=0 gx=4.00 gnorm=0 extsync_isi=-1   Border=U Bmix=N Bset=0    Bsetorder=U dbl1st=0 cmnt=4dots cond1= cond2= cond3= cond4= Bmsg=. Bmsgfname=. Bexport=? bgamp=0    bgamp0=0    feedback=0    feedbacktrig0=0    feedbacktrig1=0    nresponse=0    confidence=0 keywait=5 abort=0 nrep=1    rtlow=100  rthigh=4000 rtbias=0    t.pedest=0.00 percent1st=100  key1st=L keytout=E stair=0 numIFC=1 expmode=i pcorminv=0.00 pcormaxv=100.00 pcorshort=100.00 pcorexit=0.00 max_trials=2    iamp=0.00 lbl=0 lblmode=a SOA=0    id=3    fixdu1st=0    fixdu=0    preisi=0    randisi=0    interisi=0    postisi=0    trialsoa=0    pausedu=0    pausecount=0    pausetrign=0    XLSfields=gx,result,RT,rt... XLSfieldsx=  XLStitles=gx,result,RT,rt... XLStitlesx=  TTEST=0 LOGextra=0 snap=0 t.mode=F t.disp=0 t.amprel=0.00 t.du=3000 t.dumod=0 t.soa=0    t.repsoa=90   t.repsoarand=0    t.repn=1    t.pnum=1    t.eye=M t.dispar=0.00 t.ampratio=1.00 t.disparmod=R t.eyeintlc=0 t.opaq=0 t.trigger=E t.triggern=1    t.triggercod=255  t.triggerdu=4    t.triggerstr=4dots t.triggerrep=0 t.gor=0.00 t.gorp=0.00 t.lorp=0.00 t.aspect=1.00 t.color=w t.altcolor=0 t.altcolorn=1    t.goor=0.00 t.scale=1.00 t.chance=100  t.dord=0    t.x=0.00 t.y=0.00 t.gx=0.00 t.gy=0.00 t.grjit=0.00 t.gxjit=0.00 t.gyjit=0.00 t.subel=0 t.subel2=0 t.dynamic=0    t.swapeyes=0 t.probnum=0 t.amp=100.00 t.copy=0 t.dir=D:\Dropbox\Proj... t.fname=trail1.ppm t.fnameord=R t.flip=0 t.blur=0    t.asis=1 t.video=0 t.vidrev=0 f.mode=0 f.disp=0 b.mode=0 b.disp=0 b.mode=0 b.disp=0 c.mode=0 c.disp=0 m.mode=0 m.disp=0 n.mode=0 n.disp=0 o.mode=0 o.disp=0 p.mode=0 p.disp=0 q.mode=0 q.disp=0 r.mode=0 r.disp=0 s.mode=0 s.disp=0 u.mode=0 u.disp=0 v.mode=0 v.disp=0 w.mode=0 w.disp=0 a.mode=0 a.disp=0 d.mode=0 d.disp=0 e.mode=0 e.disp=0 g.mode=0 g.disp=0 h.mode=0 h.disp=0 i.mode=0 i.disp=0 j.mode=0 j.disp=0 k.mode=0 k.disp=0 l.mode=0 l.disp=0 x.mode=0 x.disp=0 y.mode=0 y.disp=0 z.mode=0 z.disp=0 P1=0.00 P2=0.00 P3=0.00 P4=0.00  Mon Jan 09 11:16:40 2023
+   T show pictures for memerizing - size effect
+
+ 
+
+
+" Jan 09 11:16   0.00 11   T sh " SR#-5800   time=0.0092 (0: 0:33) trial=2 %n1=100  nerr=1  %e1=0 %e2=0    T show pictures for memerizing - size effect  trial1st= 11:16:54.507 
+     gx	 result	     RT	   rter	     B#	#trials	    Thr	     tx	   tamp	   cmnt	XR#
+   4.00	   1.00	   9999	  UNDEF	      0	      2	  UNDEF	  UNDEF	  UNDEF	  4dots	XR#0-5800 	Mon Jan 09 11:16:40 2023
