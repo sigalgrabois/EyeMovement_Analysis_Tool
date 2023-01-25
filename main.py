@@ -38,28 +38,29 @@ def show_image(df):
 
     root = tk.Tk()
     root.title("eyes movement")
-
-
-    # open the image file and convert it to a PhotoImage object
-    image = PhotoImage(file="data/image.png").zoom(7)
-    image_width, image_height = image.width(), image.height()
-    # create a canvas to hold the image
-    canvas = tk.Canvas(root, width=1500, height=1100)
-    canvas_width, canvas_height = canvas.winfo_width(), canvas.winfo_height()
-
-
+    root.geometry("900x900")
+    image = Image.open('data/image.png')
+    img = image.resize((900, 900))
+    my_img = ImageTk.PhotoImage(img)
+    canvas = tk.Canvas(root, width=900, height=900)
+    canvas.create_image(0, 0, anchor=NW, image=my_img)
     canvas.pack()
 
-    # display the image on the canvas
-    canvas.create_image(0, 0, anchor='nw', image=image)
     # make a zip of the two lists - start x and start y
     start = list(zip(start_x, start_y))
     end = list(zip(end_x, end_y))
     # draw the points on the image
+    original_image_width = 1920
+    original_image_height = 1080
+    new_image_width = 900
+    new_image_height = 900
     for i in range(len(start)):
         x1, y1 = start[i]
         x2, y2 = end[i]
-        canvas.create_oval(x1, y1, x2, y2, fill='red', outline='red')
+        x1, y1 = (x1 / original_image_width) * new_image_width, (y1 / original_image_height) * new_image_height
+        x2, y2 = (x2 / original_image_width) * new_image_width, (y2 / original_image_height) * new_image_height
+        canvas.create_oval(x1, y1, x2, y2, fill="red", width=15, outline="red")
+        canvas.pack()
 
     # button = tk.Button(root,
     #                    text='EXIT PROGRAM',
