@@ -1,3 +1,22 @@
+
+Attachment ExtractDataEDF.m added.Conversation opened. 1 unread message.
+
+Skip to content
+Using Gmail with screen readers
+1 of 6,486
+קבצים‎‎
+Inbox
+
+sigal graboys
+Attachments
+10:12 PM (4 minutes ago)
+to me
+
+image.png
+
+15
+ Attachments
+  •  Scanned by Gmail
 % Sigal and Shachar - Final project import data from EDF files
 
 
@@ -136,3 +155,5 @@ convertEDFtoMAT('C:\Users\User\Documents\third_year\FINALPROJECT\trail0data');
 
 % uses data only from one eye (1 = right eye, 0 = left eye) - we will
 % choose 0 arbirtary
+ExtractDataEDF.m
+Displaying ExtractDataEDF.m.
