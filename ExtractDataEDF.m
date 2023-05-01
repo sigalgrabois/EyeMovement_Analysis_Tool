@@ -1,11 +1,22 @@
 % Sigal and Shachar - Final project import data from EDF files
+% this script takes the edf files and creates a data.csv file
 
+% clear the variabls and close all.
+clear;
+close all;
+% create gui to ask from the user the edf file
+    % Select a file
+    [fileName, folderName] = uigetfile('*.edf');
+% first we use edfImport in order to create the Trails struct with the
+% experiment data
+Trials= edfImport(fileName);
 
 % loading mat files of subjects instead of edf files (this demands
 %     edfImport manually for each edf separatly and saving the .mat of
 %     imported data (saving as: trials = edfImport('AI6317_1.edf',[1 1 1])->  save('AI6317_1.mat','trials')
-convertEDFtoMAT('C:\Users\User\Documents\third_year\FINALPROJECT\trail0data');
-% split into 2 trails - 
+%convertEDFtoMAT('C:\Users\User\Documents\third_year\FINALPROJECT\trail0data');
+% split into 2 trails -
+
  %%
             % Define trials
             WhichTrial  = 2;   % we know it's always second trial with all participants
@@ -70,7 +81,7 @@ convertEDFtoMAT('C:\Users\User\Documents\third_year\FINALPROJECT\trail0data');
                         Data(counter,7)  = double(fix_sttime - Trials(WhichTrial).Events.sttime(OnsetIdx(itrial))); % get onset: starttime of the event relative to start of the trial
                         Data(counter,8)  = double(fix_entime - Trials(WhichTrial).Events.sttime(OnsetIdx(itrial)));
                         Data(counter,9)  = double(fix_entime - fix_sttime);  % write duration
-                        
+
                         % block number
                         Data(counter,11)  = Amplitude;  % write amplitude in pixels
                         Data(counter,12) = AmplDeg;    % write amplitude in degrees
@@ -130,11 +141,9 @@ convertEDFtoMAT('C:\Users\User\Documents\third_year\FINALPROJECT\trail0data');
                     Data(i_ifix,5) = Data(i_ifix,3) ;
                     Data(i_ifix,6) = Data(i_ifix,4) ;
                 end
-
-
+% create a csv file from the Data struct holding the data frame
+writematrix(Data, 'Data.csv')
             end
 
 % uses data only from one eye (1 = right eye, 0 = left eye) - we will
 % choose 0 arbirtary
-ExtractDataEDF.m
-Displaying ExtractDataEDF.m.
