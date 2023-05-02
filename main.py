@@ -6,6 +6,7 @@ from tkinter import PhotoImage
 from tkinter import *
 from PIL import Image, ImageTk, ImageGrab
 import subprocess
+from PicsData import load_data_pics
 
 
 # TODO:
@@ -24,7 +25,8 @@ def resize_func(canvas, image, width, height):
     canvas.image = img
 
 
-def show_image(df):
+def show_image(df, image_path, width, height):
+    image_path = str(image_path)
     trails_num = df['trail number'].max()
     trail_colors = {}
     for i in range(1, trails_num + 1):
@@ -46,7 +48,7 @@ def show_image(df):
     root = tk.Tk()
     root.title("eyes movement")
     root.geometry("900x900")
-    image = Image.open('data/image.png')
+    image = Image.open(image_path)
     img = image.resize((900, 900))
     my_img = ImageTk.PhotoImage(img)
     canvas = tk.Canvas(root, width=900, height=900)
@@ -61,8 +63,8 @@ def show_image(df):
     original_image_height = 1080
     new_image_width = 900
     new_image_height = 900
-    x_axis_padding = 510
-    y_axis_padding = 90
+    x_axis_padding = original_image_width / 2 - width / 2
+    y_axis_padding = original_image_height / 2 - height / 2
 
     # Draw circles and lines between them
     for i in range(len(start)):
@@ -108,14 +110,25 @@ def run_matlab_script(matlab_app):
     subprocess.call(matlab_app)
 
 
+def choose_pic(images):
+    user_choice_pic = input("Please choose a picture by the imageID or the image name: ")
+    # for this case we want to find the image name by the imageID from the the list of images
+    # then return the image name
+    if user_choice_pic.isdigit():
+        for image in images:
+            if image.image_id == int(user_choice_pic):
+                print(type(image.image_name))
+                return image.image_name, image.image_size, image.image_size
+
+
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    # connect to Matlab and run the script that will create csv file of the data
-    # open the csv file and read it into a pandas data frame
-    matlab_app = "ExtractDataEDFv_2_1.exe"
-    run_matlab_script(matlab_app)
-    # wait for the csv file to be created - 15 seconds should be enough
-    time.sleep(7)
+    # # connect to Matlab and run the script that will create csv file of the data
+    # # open the csv file and read it into a pandas data frame
+    # matlab_app = "ExtractDataEDFv_2_1.exe"
+    # run_matlab_script(matlab_app)
+    # # wait for the csv file to be created - 15 seconds should be enough
+    # time.sleep(7)
 
     df = pd.read_csv('Data.csv', header=0, delimiter=",")
     # change the header of the data frame to the desired names - ['', 'eye fix', 'x start (pixels)', 'y start (pixels)', 'x end (pixels)', 'y end (pixels)', 'start diff (start trail- start event)','end diff (end trail- send event)'
@@ -125,7 +138,10 @@ if __name__ == '__main__':
                   'start diff (start trail- start event)', 'end diff (end trail- send event)', 'duration of fixation',
                   '', 'amplitude in pixels', 'amplitude in degrees', 'write peak velocity deg/s',
                   'write average velocity deg/s', '', 'size', 'category', 'trail number']
-    show_image(df)
+    # use the load pictures to load a list of all the images in the folder
+    path = input("please enter the path of the images data set: ")
+    images = load_data_pics(path)
+    image_name, width, height = choose_pic(images)
+    show_image(df, image_name, width, height)
     # add to Data.csv the headers from the df
     df.to_csv('Data.csv', header=True, index=False)
-
