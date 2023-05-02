@@ -1,6 +1,4 @@
 import time
-
-import pyedflib
 import numpy as np
 import pandas as pd
 import tkinter as tk
@@ -100,12 +98,6 @@ def show_image(df):
                                    fill="black", font="Arial 10 bold", activefill="yellow")
 
     canvas.pack()
-    # Capture a screenshot of the window
-    screenshot = ImageGrab.grab(root)
-
-    # Save the screenshot as a PNG file
-    screenshot.save("my_screenshot.png")
-
     root.mainloop()
 
 
@@ -120,16 +112,20 @@ def run_matlab_script(matlab_app):
 if __name__ == '__main__':
     # connect to Matlab and run the script that will create csv file of the data
     # open the csv file and read it into a pandas data frame
-    matlab_app = "ExtractDataEDF_v2.exe"
+    matlab_app = "ExtractDataEDFv_2_1.exe"
     run_matlab_script(matlab_app)
     # wait for the csv file to be created - 15 seconds should be enough
-    time.sleep(10)
+    time.sleep(7)
 
     df = pd.read_csv('Data.csv', header=0, delimiter=",")
     # change the header of the data frame to the desired names - ['', 'eye fix', 'x start (pixels)', 'y start (pixels)', 'x end (pixels)', 'y end (pixels)', 'start diff (start trail- start event)','end diff (end trail- send event)'
     # ,'duration of fixation', 'amplitude in pixels', 'amplitude in degrees', 'write peak', 'velocity deg/s', 'write average velocity deg/s', 'trail number']
-    df.columns = ['left eye', 'eye fix', 'x start (pixels)', 'y start (pixels)', 'x end (pixels)', 'y end (pixels)',
+    df.columns = ['image_index num', 'eye fix', 'x start (pixels)', 'y start (pixels)', 'x end (pixels)',
+                  'y end (pixels)',
                   'start diff (start trail- start event)', 'end diff (end trail- send event)', 'duration of fixation',
                   '', 'amplitude in pixels', 'amplitude in degrees', 'write peak velocity deg/s',
-                  'write average velocity deg/s', '', '', '', 'trail number']
+                  'write average velocity deg/s', '', 'size', 'category', 'trail number']
     show_image(df)
+    # add to Data.csv the headers from the df
+    df.to_csv('Data.csv', header=True, index=False)
+

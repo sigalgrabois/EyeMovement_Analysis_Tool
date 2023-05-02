@@ -160,10 +160,11 @@ iday =1;
             % add image information to Data
             for iimg=1:size(end_trial_msg,2)
                 % find image's index number
+                load('Exposure_image_indx.mat')
                 if iday==1
-                    img_NameOrder(iimg,4)= cellstr( img_NameOrder(iimg,1))  ;  %find image_index number (from index list) for images by individual order of presentation
+                    img_NameOrder(iimg,4)= Exposure_image_indx(find(contains(Exposure_image_indx(:,1), cellstr( img_NameOrder(iimg,1)))),2)  ;  %find image_index number (from index list) for images by individual order of presentation
                 elseif iday==2
-                    img_NameOrder(iimg,4)= Test_image_indx(contains(Test_image_indx(:,1), cellstr( img_NameOrder(iimg,1))),2)  ;  %find image_index number (from index list) for images by individual order of presentation
+                    img_NameOrder(iimg,4)= Test_image_indx(find(contains(Test_image_indx(:,1), cellstr( img_NameOrder(iimg,1)))),2)  ;  %find image_index number (from index list) for images by individual order of presentation
                 end % if day exposure or test
 
                 if strcmp(convertCharsToStrings(cellstr( img_NameOrder(iimg,2))),convertCharsToStrings('Face'))    % assigning index numbers to categories

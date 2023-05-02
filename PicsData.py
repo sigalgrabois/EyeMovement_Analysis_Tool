@@ -66,6 +66,3 @@ def print_pic_list(pics_list):
         print(pic.get_image_category_id())
         print(pic.get_trail_number())
         print("*********************")
-
-
-print_pic_list(load_data_pics('Images\\images.xlsx'))
