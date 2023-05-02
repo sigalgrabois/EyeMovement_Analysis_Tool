@@ -6,7 +6,7 @@ import pandas as pd
 import tkinter as tk
 from tkinter import PhotoImage
 from tkinter import *
-from PIL import Image, ImageTk
+from PIL import Image, ImageTk, ImageGrab
 import subprocess
 
 
@@ -100,6 +100,12 @@ def show_image(df):
                                    fill="black", font="Arial 10 bold", activefill="yellow")
 
     canvas.pack()
+    # Capture a screenshot of the window
+    screenshot = ImageGrab.grab(root)
+
+    # Save the screenshot as a PNG file
+    screenshot.save("my_screenshot.png")
+
     root.mainloop()
 
 
@@ -127,6 +133,3 @@ if __name__ == '__main__':
                   '', 'amplitude in pixels', 'amplitude in degrees', 'write peak velocity deg/s',
                   'write average velocity deg/s', '', '', '', 'trail number']
     show_image(df)
-
-    # save the df as a csv file - create a new csv file with the data frame
-    df.to_csv('data_df.csv', index=False)
