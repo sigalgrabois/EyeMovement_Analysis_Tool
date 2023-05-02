@@ -10,6 +10,8 @@ close all;
 % first we use edfImport in order to create the Trails struct with the
 % experiment data
 Trials= edfImport(fileName);
+iblock=1;
+iday =1;
 
 % loading mat files of subjects instead of edf files (this demands
 %     edfImport manually for each edf separatly and saving the .mat of
@@ -22,17 +24,28 @@ Trials= edfImport(fileName);
             WhichTrial  = 2;   % we know it's always second trial with all participants
             OnsetIdx    = find(contains(Trials(WhichTrial).Events.message,'TRIGGER'));   % search for trigger message - index of onset of trial
             OffsetIdx   = find(contains(Trials(WhichTrial).Events.message,'END_TRIAL')); % search for end_trial message - index of offset of trial
+
             assert(size(OnsetIdx,2)==size(OffsetIdx,2),'Error: Onset and offset doesnt match - check missing messages?') % does onset and offset match?
-                        % list of images participant viewed by order of presentation
+            % list of images participant viewed by order of presentation
             end_trial_msg = Trials(WhichTrial).Events.message(OffsetIdx);   %  extract END_TRIAL messages
             strt_trial_msg = Trials(WhichTrial).Events.message(OnsetIdx);   %  extract END_TRIAL messages
-
 
             for iimg = 1:size(end_trial_msg,2)
                 img_dtlsEnd(:,iimg) = split (end_trial_msg(1,iimg));    % extracting image manes from END_TRIAL messages by order of presentation
                 img_dtlsTrigger(:,iimg) = split (strt_trial_msg(1,iimg));   %  extracting image size and category from TRIGGER  messages
             end
-                        % loop through events and find valid trials
+            img_NameOrder (:,1) = img_dtlsEnd(10,:)';    % names of the images participant viewed by presentation order
+            img_NameOrder (:,2:3) = img_dtlsTrigger([3 8],:)';    % size and category of images by presentation order
+            % handle images that have 1 instead of 112 in size col (becuase of mistake in p.file , gx was gx=1 instead of gx=112)
+            if sum (convertCharsToStrings(img_NameOrder (:,3)) == convertCharsToStrings('1.00') )>0
+                indxCorrSize = find(convertCharsToStrings(img_NameOrder (:,3)) == convertCharsToStrings('1.00'));
+                img_NameOrder (indxCorrSize,3) = {'112.00'};
+            end
+
+
+
+
+            % loop through events and find valid trials
             counter = 1;
             ifix =  1;     % increase event number
 
@@ -81,8 +94,7 @@ Trials= edfImport(fileName);
                         Data(counter,7)  = double(fix_sttime - Trials(WhichTrial).Events.sttime(OnsetIdx(itrial))); % get onset: starttime of the event relative to start of the trial
                         Data(counter,8)  = double(fix_entime - Trials(WhichTrial).Events.sttime(OnsetIdx(itrial)));
                         Data(counter,9)  = double(fix_entime - fix_sttime);  % write duration
-
-                        % block number
+                        Data(counter,10) = iblock;                            % block number
                         Data(counter,11)  = Amplitude;  % write amplitude in pixels
                         Data(counter,12) = AmplDeg;    % write amplitude in degrees
                         Data(counter,13) = Trials(WhichTrial).Events.pvel(ievent); % write peak velocity deg/s
@@ -141,6 +153,38 @@ Trials= edfImport(fileName);
                     Data(i_ifix,5) = Data(i_ifix,3) ;
                     Data(i_ifix,6) = Data(i_ifix,4) ;
                 end
+
+
+                
+            %%
+            % add image information to Data
+            for iimg=1:size(end_trial_msg,2)
+                % find image's index number
+                if iday==1
+                    img_NameOrder(iimg,4)= cellstr( img_NameOrder(iimg,1))  ;  %find image_index number (from index list) for images by individual order of presentation
+                elseif iday==2
+                    img_NameOrder(iimg,4)= Test_image_indx(contains(Test_image_indx(:,1), cellstr( img_NameOrder(iimg,1))),2)  ;  %find image_index number (from index list) for images by individual order of presentation
+                end % if day exposure or test
+
+                if strcmp(convertCharsToStrings(cellstr( img_NameOrder(iimg,2))),convertCharsToStrings('Face'))    % assigning index numbers to categories
+                    img_NameOrder(iimg,5) = {1};
+                elseif    strcmp(convertCharsToStrings(cellstr( img_NameOrder(iimg,2))),convertCharsToStrings('People'))
+                    img_NameOrder(iimg,5) = {2};
+                elseif    strcmp(convertCharsToStrings(cellstr( img_NameOrder(iimg,2))),convertCharsToStrings('Indoor'))
+                    img_NameOrder(iimg,5) = {3};
+                elseif  strcmp(convertCharsToStrings(cellstr( img_NameOrder(iimg,2))),convertCharsToStrings('Outdoor'))
+                    img_NameOrder(iimg,5) = {4};
+                end % i_im
+            end % categories
+            im_NameOrder_Hdr = ["img_name","category","size","image_index_number","category_index"];
+
+            % adding image_index num, size and category to Data table
+            for i_ifix = 1:size(Data,1)
+                Data(i_ifix,1) =cell2mat(img_NameOrder(Data(i_ifix,18),4));
+                Data(i_ifix,16) = convertCharsToStrings(cell2mat(img_NameOrder(Data(i_ifix,18),3)));
+                Data(i_ifix,17) = convertCharsToStrings(cell2mat(img_NameOrder(Data(i_ifix,18),5)));
+            end
+
 % create a csv file from the Data struct holding the data frame
 writematrix(Data, 'Data.csv')
             end
