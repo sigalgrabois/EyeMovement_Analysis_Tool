@@ -29,7 +29,9 @@ def resize_func(canvas, image, width, height):
 def show_image(df, image_path, width, height, trails_num):
     image_path = image_path
     trail_colors = {}
+    trails_num = df['trail number'].max()
     # leave the columns of df that we need - where the column trail number is equal to the trail number we want
+    # df = df[df['trail number'] == trails_num]
     for i in range(1, trails_num + 1):
         trail_colors[i] = "#%06x" % np.random.randint(0, 0xFFFFFF)
     print(trail_colors)
@@ -71,21 +73,21 @@ def show_image(df, image_path, width, height, trails_num):
 
     # Draw circles and lines between them
     for i in range(len(start)):
-        if [df['trail number'][i]] == trails_num:
-            x1, y1 = start[i]
-            x2, y2 = end[i]
-            x1, y1 = x1 - x_axis_padding, y1 - y_axis_padding
-            x2, y2 = x2 - x_axis_padding, y2 - y_axis_padding
-            print("x1, y1: ")
-            print(x1, y1)
-            print("x2, y2: ")
-            print(x2, y2)
-            print(df['trail number'][i])
+        x1, y1 = start[i]
+        x2, y2 = end[i]
+        x1, y1 = x1 - x_axis_padding, y1 - y_axis_padding
+        x2, y2 = x2 - x_axis_padding, y2 - y_axis_padding
+        print("x1, y1: ")
+        print(x1, y1)
+        print("x2, y2: ")
+        print(x2, y2)
 
-            # Draw circle
-            trail_number = df.loc[i, 'trail number']
-            color = trail_colors[trail_number]
-            canvas.create_oval(x1, y1, x2, y2, fill=color, width=4, outline=color, tags="dot", activefill=color)
+        # Draw circle
+        trail_number = df.loc[i, 'trail number']
+        color = trail_colors[trail_number]
+        canvas.create_oval(x1, y1, x2, y2, fill=color, width=4, outline=color, tags="dot", activefill=color)
+
+        if i > 0:
             # Draw line to previous point
             prev_x, prev_y = start[i - 1]
             prev_x, prev_y = prev_x - x_axis_padding, prev_y - y_axis_padding
@@ -96,6 +98,11 @@ def show_image(df, image_path, width, height, trails_num):
                 canvas.create_text(((x1 + prev_x) / 2) + 4, ((y1 + prev_y) / 2) - 4,
                                    text=str(int(trail_number)) + " , " + str(i),
                                    fill="black", font="Arial 10 bold")
+            else:
+                # canvas.create_text(4 + ((x1 + prev_x) / 2), 4 + ((y1 + prev_y) / 2),
+                #                    text=str(int(trail_number)) + " , " + str(i),
+                #                    fill="black", font="Arial 10 bold", activefill="yellow")
+                continue
 
     canvas.pack()
     root.mainloop()
@@ -113,7 +120,7 @@ def choose_pic(images):
 
     for image in images:
         if image.image_id == int(user_choice_pic) or image.image_name == user_choice_pic:
-            print( "You chose image: " + image.image_name)
+            print("You chose image: " + image.image_name)
             image.image_size = image.image_size.replace("'", "")
             image.image_name = image.image_name.replace("'", "")
 
@@ -124,8 +131,6 @@ def choose_pic(images):
     # If the loop completes without returning a value, the choice was not found
     print("Image not found. Please make sure to enter a valid image ID or image name.")
     return None, None, None
-
-
 
 
 # Press the green button in the gutter to run the script.
@@ -163,5 +168,3 @@ if __name__ == '__main__':
     show_image(df, image_name, width, height, chosen_image.trail_number)
     # add to Data.csv the headers from the df
     df.to_csv('Data.csv', header=True, index=False)
-
-
