@@ -26,7 +26,7 @@ def resize_func(canvas, image, width, height):
 
 
 def show_image(df, image_path, width, height):
-    image_path = str(image_path)
+    image_path = image_path
     trails_num = df['trail number'].max()
     trail_colors = {}
     for i in range(1, trails_num + 1):
@@ -48,6 +48,7 @@ def show_image(df, image_path, width, height):
     root = tk.Tk()
     root.title("eyes movement")
     root.geometry("900x900")
+    image_path = image_path.replace("'", "")
     image = Image.open(image_path)
     img = image.resize((900, 900))
     my_img = ImageTk.PhotoImage(img)
@@ -63,8 +64,8 @@ def show_image(df, image_path, width, height):
     original_image_height = 1080
     new_image_width = 900
     new_image_height = 900
-    x_axis_padding = original_image_width / 2 - width / 2
-    y_axis_padding = original_image_height / 2 - height / 2
+    x_axis_padding = float(original_image_width) / 2 - float(width) / 2
+    y_axis_padding = float(original_image_height) / 2 - float(height) / 2
 
     # Draw circles and lines between them
     for i in range(len(start)):
@@ -112,13 +113,20 @@ def run_matlab_script(matlab_app):
 
 def choose_pic(images):
     user_choice_pic = input("Please choose a picture by the imageID or the image name: ")
-    # for this case we want to find the image name by the imageID from the the list of images
-    # then return the image name
-    if user_choice_pic.isdigit():
-        for image in images:
-            if image.image_id == int(user_choice_pic):
-                print(type(image.image_name))
-                return image.image_name, image.image_size, image.image_size
+
+    for image in images:
+        if image.image_id == int(user_choice_pic) or image.image_name == user_choice_pic:
+            print( "You chose image: " + image.image_name)
+            image.image_size = image.image_size.replace("'", "")
+            image.image_name = image.image_name.replace("'", "")
+
+            print("Image size: " + str(image.image_size) + " pixels")
+            print("Image size: " + str(image.image_size) + " pixels")
+            return image.image_name, image.image_size, image.image_size
+
+    # If the loop completes without returning a value, the choice was not found
+    print("Image not found. Please make sure to enter a valid image ID or image name.")
+    return None, None, None
 
 
 # Press the green button in the gutter to run the script.
