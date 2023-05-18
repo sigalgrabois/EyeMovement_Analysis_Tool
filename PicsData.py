@@ -34,6 +34,12 @@ class Picture:
 
     def get_image_category_id(self):
         return self.image_category_id
+    def print(self):
+        print(self.image_name)
+        print(self.image_category)
+        print(self.image_size)
+        print(self.image_id)
+        print(self.image_category_id)
 
     def load_picture(self):
         image = self.open(self.image_name)
@@ -57,6 +63,7 @@ def load_data_pics(file):
     return pics_list
 
 
+
 def print_pic_list(pics_list):
     for pic in pics_list:
         print(pic.get_image_name())
@@ -66,3 +73,4 @@ def print_pic_list(pics_list):
         print(pic.get_image_category_id())
         print(pic.get_trail_number())
         print("*********************")
+
