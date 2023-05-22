@@ -6,8 +6,10 @@ from tkinter import PhotoImage
 from tkinter import *
 from PIL import Image, ImageTk, ImageGrab
 import subprocess
-from PicsData import load_data_pics
-from PicsData import Picture
+from PicsData import load_data_pics, Picture
+import openpyxl
+from openpyxl import Workbook
+import os
 
 
 # TODO:
@@ -26,12 +28,11 @@ def resize_func(canvas, image, width, height):
     canvas.image = img
 
 
-def show_image(df, image_path, width, height, trails_num):
-    image_path = image_path
+def show_image(df, image_path, width, height, trail_num):
+    print("show image")
+
+    trails_num = trail_num
     trail_colors = {}
-    trails_num = df['trail number'].max()
-    # leave the columns of df that we need - where the column trail number is equal to the trail number we want
-    # df = df[df['trail number'] == trails_num]
     for i in range(1, trails_num + 1):
         trail_colors[i] = "#%06x" % np.random.randint(0, 0xFFFFFF)
     print(trail_colors)
@@ -43,17 +44,15 @@ def show_image(df, image_path, width, height, trails_num):
     end_x = df['x end (pixels)'].values.tolist()
     end_y = df['y end (pixels)'].values.tolist()
 
-    start_diffx = df['x start (pixels)'].values.tolist()
-    start_diffy = df['y start (pixels)'].values.tolist()
-    end_diffx = df['x end (pixels)'].values.tolist()
-    end_diffy = df['y end (pixels)'].values.tolist()
-
     root = tk.Tk()
     root.title("eyes movement")
     root.geometry("900x900")
     image_path = image_path.replace("'", "")
-    img_dir = "C:/Users/User/PycharmProjects/FinalProject/ImagesAllSize900x900"
+    img_dir = "./ImagesAllSize900x900"
     image = Image.open(img_dir + "/" + image_path)
+
+    # Convert the string to a raw string
+    # image = Image.open(image_path)
     img = image.resize((900, 900))
     my_img = ImageTk.PhotoImage(img)
     canvas = tk.Canvas(root, width=900, height=900)
@@ -66,8 +65,8 @@ def show_image(df, image_path, width, height, trails_num):
     # draw the points on the image
     original_image_width = 1920
     original_image_height = 1080
-    new_image_width = 900
-    new_image_height = 900
+    width = width.replace("'", "")
+    height = height.replace("'", "")
     x_axis_padding = float(original_image_width) / 2 - float(width) / 2
     y_axis_padding = float(original_image_height) / 2 - float(height) / 2
 
@@ -83,26 +82,20 @@ def show_image(df, image_path, width, height, trails_num):
         print(x2, y2)
 
         # Draw circle
-        trail_number = df.loc[i, 'trail number']
+        trail_number = trails_num
         color = trail_colors[trail_number]
         canvas.create_oval(x1, y1, x2, y2, fill=color, width=4, outline=color, tags="dot", activefill=color)
 
-        if i > 0:
-            # Draw line to previous point
-            prev_x, prev_y = start[i - 1]
-            prev_x, prev_y = prev_x - x_axis_padding, prev_y - y_axis_padding
-            trail_number = df.loc[i, 'trail number']
-            color = trail_colors[trail_number]
-            canvas.create_line(prev_x, prev_y, x1, y1, width=5, fill=color)
-            if df['trail number'][i] == trail_num:
-                canvas.create_text(((x1 + prev_x) / 2) + 4, ((y1 + prev_y) / 2) - 4,
-                                   text=str(int(trail_number)) + " , " + str(i),
-                                   fill="black", font="Arial 10 bold")
-            else:
-                # canvas.create_text(4 + ((x1 + prev_x) / 2), 4 + ((y1 + prev_y) / 2),
-                #                    text=str(int(trail_number)) + " , " + str(i),
-                #                    fill="black", font="Arial 10 bold", activefill="yellow")
-                continue
+        # Draw line to previous point
+        prev_x, prev_y = start[i - 1]
+        prev_x, prev_y = prev_x - x_axis_padding, prev_y - y_axis_padding
+        trail_number = trail_number
+        color = trail_colors[trail_number]
+        canvas.create_line(prev_x, prev_y, x1, y1, width=5, fill=color)
+
+        canvas.create_text(((x1 + prev_x) / 2) + 4, ((y1 + prev_y) / 2) - 4,
+                           text=str(int(trail_number)) + " , " + str(i),
+                           fill="yellow", font="Arial 10 bold")
 
     canvas.pack()
     root.mainloop()
@@ -121,12 +114,12 @@ def choose_pic(images):
     for image in images:
         if image.image_id == int(user_choice_pic) or image.image_name == user_choice_pic:
             print("You chose image: " + image.image_name)
-            image.image_size = image.image_size.replace("'", "")
-            image.image_name = image.image_name.replace("'", "")
+            image_size = image.image_size.replace("'", "")
+            image_name = image.image_name.replace("'", "")
 
-            print("Image size: " + str(image.image_size) + " pixels")
-            print("Image size: " + str(image.image_size) + " pixels")
-            return image.image_name, image.image_size, image.image_size, image
+            print("Image size: " + str(image_size) + " pixels")
+            print("Image name: " + str(image_name))
+            return str(image_name), image_size, image.image_size, image.image_id, image.image_category_id
 
     # If the loop completes without returning a value, the choice was not found
     print("Image not found. Please make sure to enter a valid image ID or image name.")
@@ -153,18 +146,22 @@ if __name__ == '__main__':
     # use the load pictures to load a list of all the images in the folder
     path = input("please enter the path of the images data set: ")
     images = load_data_pics(path)
-    image_name, width, height, chosen_image = choose_pic(images)
+    image_name, width, height, image_id, image_category_id = choose_pic(images)
+    chosen_image = Picture(image_name, width, height, image_id, image_category_id)
+    image_idx = chosen_image.image_id
+    # in df search for the image index and from the line of the index bring me the trail number
     # Search for the image index in the DataFrame
-    matching_rows = df[df['image_index num'] == chosen_image.image_id]
-    # Check if any matching rows are found
-    if not matching_rows.empty:
-        # Retrieve the trail numbers from all matching rows
-        trail_numbers = matching_rows['trail number'].tolist()
-        trail_num = trail_numbers[0]
-        chosen_image.set_trail_number(trail_num)
-        print(f"The trail numbers for image index {chosen_image.image_id} are: {trail_numbers}")
+    matching_row = df[df['image_index num'] == image_idx]
+    print(matching_row)
+    trail_number = matching_row.loc[:, 'trail number'].values[0].T
+
+    # Check if a matching row is found
+    if not matching_row.empty:
+        # Retrieve the trail number from a different column in the matching row
+        print(f"The trail number for image index {image_idx} is: {trail_number}")
     else:
-        print(f"No trail numbers found for image index {chosen_image.image_id}")
-    show_image(df, image_name, width, height, chosen_image.trail_number)
+        print(f"No trail number found for image index {image_idx}")
+
+    show_image(matching_row, image_name, width, height, trail_number)
     # add to Data.csv the headers from the df
     df.to_csv('Data.csv', header=True, index=False)
