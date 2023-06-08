@@ -1,8 +1,6 @@
-import time
 import numpy as np
 import pandas as pd
 import tkinter as tk
-from tkinter import PhotoImage
 from tkinter import *
 from PIL import Image, ImageTk, ImageGrab
 import subprocess
@@ -10,14 +8,6 @@ import subprocess
 from PIL.ImageDraw import ImageDraw
 
 from PicsData import load_data_pics, Picture
-import openpyxl
-from openpyxl import Workbook
-import os
-
-
-# TODO:
-# 2. create the trajectory of the eyes movement
-# 3. divide the trajectory into trails by different colors. each trail will be a different color
 
 
 def close(ws):
@@ -25,7 +15,7 @@ def close(ws):
 
 
 def resize_func(canvas, image, width, height):
-    resize_img = image.resize((width, width))
+    resize_img = image.resize((width, height))
     img = ImageTk.PhotoImage(resize_img)
     canvas.config(image=img)
     canvas.image = img
@@ -134,22 +124,30 @@ def run_matlab_script(matlab_app):
     subprocess.call(matlab_app)
 
 
-def choose_pic(images):
+def choose_pic(images, image_indexes):
     user_choice_pic = input("Please choose a picture by the imageID or the image name: ")
+    legal_image = False
+    chosen_image = None
+    if int(user_choice_pic) not in image_indexes:  # image id is not in the list of image indexes from Data.csv
+        return None, None, None, None, None, legal_image
 
     for image in images:
+        chosen_image = image
+
         if image.image_id == int(user_choice_pic) or image.image_name == user_choice_pic:
+            legal_image = True
             print("You chose image: " + image.image_name)
-            image_size = image.image_size.replace("'", "")
-            image_name = image.image_name.replace("'", "")
+            image.image_size = image.image_size.replace("'", "")
+            image.image_name = image.image_name.replace("'", "")
 
-            print("Image size: " + str(image_size) + " pixels")
-            print("Image name: " + str(image_name))
-            return str(image_name), image_size, image.image_size, image.image_id, image.image_category_id
+            print("Image size: " + str(image.image_size) + " pixels")
+            print("Image name: " + str(image.image_name))
 
-    # If the loop completes without returning a value, the choice was not found
-    print("Image not found. Please make sure to enter a valid image ID or image name.")
-    return None, None, None
+    if legal_image:
+        return str(
+            chosen_image.image_name), chosen_image.image_size, chosen_image.image_size, chosen_image.image_id, chosen_image.image_category_id, legal_image
+    else:  # If the loop completes without returning a value, the choice was not found
+        return None, None, None, None, None, legal_image
 
 
 # Press the green button in the gutter to run the script.
@@ -169,10 +167,14 @@ if __name__ == '__main__':
                   'start diff (start trail- start event)', 'end diff (end trail- send event)', 'duration of fixation',
                   '', 'amplitude in pixels', 'amplitude in degrees', 'write peak velocity deg/s',
                   'write average velocity deg/s', '', 'size', 'category', 'trail number']
+    image_indexes = list(df['image_index num'].unique())
     # use the load pictures to load a list of all the images in the folder
     path = input("please enter the path of the images data set: ")
     images = load_data_pics(path)
-    image_name, width, height, image_id, image_category_id = choose_pic(images)
+    image_name, width, height, image_id, image_category_id, legal_image = choose_pic(images, image_indexes)
+    if not legal_image:
+        print("Image not found. Please make sure to enter a valid image ID or image name.")
+        exit()
     chosen_image = Picture(image_name, width, height, image_id, image_category_id)
     image_idx = chosen_image.image_id
     # in df search for the image index and from the line of the index bring me the trail number
