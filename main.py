@@ -6,6 +6,9 @@ from tkinter import PhotoImage
 from tkinter import *
 from PIL import Image, ImageTk, ImageGrab
 import subprocess
+
+from PIL.ImageDraw import ImageDraw
+
 from PicsData import load_data_pics, Picture
 import openpyxl
 from openpyxl import Workbook
@@ -28,9 +31,25 @@ def resize_func(canvas, image, width, height):
     canvas.image = img
 
 
+def save_data(df):
+    print("save data")
+    df.to_excel("eyes_movement.xlsx", sheet_name='eyes_movement', index=False)
+
+
+def save_image(canvas):
+    # take the image from the canvas with all that is on it
+    # and export it to a png file
+    canvas.postscript(file="eyes_movement.ps", colormode='color')
+    img = Image.open("eyes_movement.ps")
+    img.save("eyes_movement.png", "png")
+
+
+def create_heatmap(df, image_path, width, height):
+    pass
+
+
 def show_image(df, image_path, width, height, trail_num):
     print("show image")
-
     trails_num = trail_num
     trail_colors = {}
     for i in range(1, trails_num + 1):
@@ -47,6 +66,14 @@ def show_image(df, image_path, width, height, trail_num):
     root = tk.Tk()
     root.title("eyes movement")
     root.geometry("900x900")
+    root.anchor(CENTER)
+
+    # add a button to save the image with the trails on it
+    button = tk.Button(root, text="Save Image", command=lambda: save_image(canvas))
+    button.pack(side="top", fill="both", expand="yes", padx="10", pady="10")
+    # add a button to create a heatmap of the trails on the image
+    button = tk.Button(root, text="Create Heatmap", command=lambda: create_heatmap(df, image_path, width, height))
+    button.pack(side="top", fill="both", expand="yes", padx="10", pady="10")
     image_path = image_path.replace("'", "")
     img_dir = "./ImagesAllSize900x900"
     image = Image.open(img_dir + "/" + image_path)
@@ -97,7 +124,6 @@ def show_image(df, image_path, width, height, trail_num):
                            text=str(int(trail_number)) + " , " + str(i),
                            fill="yellow", font="Arial 10 bold")
 
-    canvas.pack()
     root.mainloop()
 
 
