@@ -6,8 +6,10 @@ from tkinter import PhotoImage
 from tkinter import *
 from PIL import Image, ImageTk, ImageGrab
 import subprocess
+import seaborn as sns
 
 from PIL.ImageDraw import ImageDraw
+import matplotlib.pyplot as plt
 
 from PicsData import load_data_pics, Picture
 import openpyxl
@@ -16,9 +18,11 @@ import os
 
 
 # TODO:
-# 2. create the trajectory of the eyes movement
-# 3. divide the trajectory into trails by different colors. each trail will be a different color
-
+# create a video from the images with the eye movement
+# create a heatmap from the eye movement
+# add a function to see many experimenters at the same time on the same image
+# same image with different sizes on the same window - 4 images
+# write the app itself
 
 def close(ws):
     ws.destroy()
@@ -31,11 +35,6 @@ def resize_func(canvas, image, width, height):
     canvas.image = img
 
 
-def save_data(df):
-    print("save data")
-    df.to_excel("eyes_movement.xlsx", sheet_name='eyes_movement', index=False)
-
-
 def save_image(canvas):
     # take the image from the canvas with all that is on it
     # and export it to a png file
@@ -44,8 +43,30 @@ def save_image(canvas):
     img.save("eyes_movement.png", "png")
 
 
-def create_heatmap(df, image_path, width, height):
-    pass
+import seaborn as sns
+
+
+def create_heatmap(width, height, heat_fixations):
+    # Convert heat_fixations to a pandas DataFrame
+    df_heatmap = pd.DataFrame(heat_fixations, columns=["x", "y"])
+
+    # Normalize x and y coordinates to the range [0, 1]
+    df_heatmap["x_normalized"] = df_heatmap["x"] / width
+    df_heatmap["y_normalized"] = df_heatmap["y"] / height
+
+    # Create a 2D histogram of the normalized coordinates
+    heatmap, x_edges, y_edges = np.histogram2d(df_heatmap["x_normalized"], df_heatmap["y_normalized"], bins=100)
+
+    # Create a DataFrame from the heatmap values
+    df_heatmap = pd.DataFrame(heatmap, index=x_edges[:-1], columns=y_edges[:-1])
+
+    # Create a heatmap plot using seaborn
+    plt.figure(figsize=(8, 6))
+    sns.heatmap(df_heatmap, cmap="hot", square=True, cbar=False)
+    plt.title("Eye Movement Heatmap")
+    plt.xlabel("X Coordinate")
+    plt.ylabel("Y Coordinate")
+    plt.show()
 
 
 def show_image(df, image_path, width, height, trail_num):
@@ -72,19 +93,30 @@ def show_image(df, image_path, width, height, trail_num):
     button = tk.Button(root, text="Save Image", command=lambda: save_image(canvas))
     button.pack(side="top", fill="both", expand="yes", padx="10", pady="10")
     # add a button to create a heatmap of the trails on the image
-    button = tk.Button(root, text="Create Heatmap", command=lambda: create_heatmap(df, image_path, width, height))
+    button = tk.Button(root, text="Create Heatmap",
+                       command=lambda: create_heatmap(new_width, new_height, heatmap_points))
     button.pack(side="top", fill="both", expand="yes", padx="10", pady="10")
     image_path = image_path.replace("'", "")
     img_dir = "./ImagesAllSize900x900"
     image = Image.open(img_dir + "/" + image_path)
+    new_width = int(float(width.replace("'", "").replace('"', '')))
+    new_height = int(float(height.replace("'", "").replace('"', '')))
 
     # Convert the string to a raw string
     # image = Image.open(image_path)
-    img = image.resize((900, 900))
+    img = image.resize((new_width, new_height))
     my_img = ImageTk.PhotoImage(img)
-    canvas = tk.Canvas(root, width=900, height=900)
+    screen_width = root.winfo_screenwidth()
+    screen_height = root.winfo_screenheight()
+    canvas = tk.Canvas(root, width=screen_width, height=screen_height)
     canvas.create_image(0, 0, anchor=NW, image=my_img)
     canvas.pack()
+
+    size_list = [900, 450, 225, 112]
+    scale_factors = [1, 2, 4, 8.0357]
+    # create a dictionary of the size list and the scale factor
+    scale_dict = dict(zip(size_list, scale_factors))
+    chosen_factor = scale_dict[new_width]
 
     # make a zip of the two lists - start x and start y
     start = list(zip(start_x, start_y))
@@ -95,14 +127,19 @@ def show_image(df, image_path, width, height, trail_num):
     width = width.replace("'", "")
     height = height.replace("'", "")
     x_axis_padding = float(original_image_width) / 2 - float(width) / 2
+    print("x_axis_padding: " + str(x_axis_padding))
     y_axis_padding = float(original_image_height) / 2 - float(height) / 2
+    print("y_axis_padding: " + str(y_axis_padding))
+    heatmap_points = []
 
     # Draw circles and lines between them
     for i in range(len(start)):
         x1, y1 = start[i]
         x2, y2 = end[i]
-        x1, y1 = x1 - x_axis_padding, y1 - y_axis_padding
-        x2, y2 = x2 - x_axis_padding, y2 - y_axis_padding
+        x1, y1 = (x1 - x_axis_padding) / chosen_factor, (y1 - y_axis_padding) / chosen_factor
+        heatmap_points.append((x1, y1))
+        x2, y2 = (x2 - x_axis_padding) / chosen_factor, (y2 - y_axis_padding) / chosen_factor
+        heatmap_points.append((x2, y2))
         print("x1, y1: ")
         print(x1, y1)
         print("x2, y2: ")
@@ -115,7 +152,7 @@ def show_image(df, image_path, width, height, trail_num):
 
         # Draw line to previous point
         prev_x, prev_y = start[i - 1]
-        prev_x, prev_y = prev_x - x_axis_padding, prev_y - y_axis_padding
+        prev_x, prev_y = (prev_x - x_axis_padding) / chosen_factor, (prev_y - y_axis_padding) / chosen_factor
         trail_number = trail_number
         color = trail_colors[trail_number]
         canvas.create_line(prev_x, prev_y, x1, y1, width=5, fill=color)
@@ -125,6 +162,7 @@ def show_image(df, image_path, width, height, trail_num):
                            fill="yellow", font="Arial 10 bold")
 
     root.mainloop()
+    return x_axis_padding, y_axis_padding
 
 
 def run_matlab_script(matlab_app):
@@ -154,6 +192,8 @@ def choose_pic(images):
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
+    # create a gui to choose the image
+
     # # connect to Matlab and run the script that will create csv file of the data
     # # open the csv file and read it into a pandas data frame
     # matlab_app = "ExtractDataEDFv_2_1.exe"
@@ -188,6 +228,6 @@ if __name__ == '__main__':
     else:
         print(f"No trail number found for image index {image_idx}")
 
-    show_image(matching_row, image_name, width, height, trail_number)
+    x, y = show_image(matching_row, image_name, width, height, trail_number)
     # add to Data.csv the headers from the df
     df.to_csv('Data.csv', header=True, index=False)
