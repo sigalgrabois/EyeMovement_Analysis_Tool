@@ -69,13 +69,11 @@ def create_heatmap(width, height, heat_fixations):
     plt.show()
 
 
-def show_image(df, image_path, width, height, trail_num):
-    print("show image")
-    trails_num = trail_num
+def show_image(df, image_path, width, height, trail_num, method):
+    trails_num = np.unique(trail_num)
     trail_colors = {}
-    for i in range(1, trails_num + 1):
-        trail_colors[i] = "#%06x" % np.random.randint(0, 0xFFFFFF)
-    print(trail_colors)
+    for num in trails_num:
+        trail_colors[num] = "#%06x" % np.random.randint(0, 0xFFFFFF)
     # make a list out of the 3th column in the data frame - start x of the eye movement
     # Extract the desired columns
     # save the values from the 3th column in a list not with loc
@@ -127,11 +125,9 @@ def show_image(df, image_path, width, height, trail_num):
     width = width.replace("'", "")
     height = height.replace("'", "")
     x_axis_padding = float(original_image_width) / 2 - float(width) / 2
-    print("x_axis_padding: " + str(x_axis_padding))
     y_axis_padding = float(original_image_height) / 2 - float(height) / 2
-    print("y_axis_padding: " + str(y_axis_padding))
     heatmap_points = []
-
+    default_color = "#0000FF"
     # Draw circles and lines between them
     for i in range(len(start)):
         x1, y1 = start[i]
@@ -140,21 +136,23 @@ def show_image(df, image_path, width, height, trail_num):
         heatmap_points.append((x1, y1))
         x2, y2 = (x2 - x_axis_padding) / chosen_factor, (y2 - y_axis_padding) / chosen_factor
         heatmap_points.append((x2, y2))
-        print("x1, y1: ")
-        print(x1, y1)
-        print("x2, y2: ")
-        print(x2, y2)
 
         # Draw circle
-        trail_number = trails_num
-        color = trail_colors[trail_number]
+        if method == "2":
+            trail_number = trail_num[i]
+            color = trail_colors[trail_number]
+
+        else:
+            if len(trails_num) == 1:
+                trail_number = trails_num[0]
+                color = trail_colors[trail_number]
+            else:
+                color = default_color
         canvas.create_oval(x1, y1, x2, y2, fill=color, width=4, outline=color, tags="dot", activefill=color)
 
         # Draw line to previous point
         prev_x, prev_y = start[i - 1]
         prev_x, prev_y = (prev_x - x_axis_padding) / chosen_factor, (prev_y - y_axis_padding) / chosen_factor
-        trail_number = trail_number
-        color = trail_colors[trail_number]
         canvas.create_line(prev_x, prev_y, x1, y1, width=5, fill=color)
 
         canvas.create_text(((x1 + prev_x) / 2) + 4, ((y1 + prev_y) / 2) - 4,
@@ -177,12 +175,8 @@ def choose_pic(images):
 
     for image in images:
         if image.image_id == int(user_choice_pic) or image.image_name == user_choice_pic:
-            print("You chose image: " + image.image_name)
             image_size = image.image_size.replace("'", "")
             image_name = image.image_name.replace("'", "")
-
-            print("Image size: " + str(image_size) + " pixels")
-            print("Image name: " + str(image_name))
             return str(image_name), image_size, image.image_size, image.image_id, image.image_category_id
 
     # If the loop completes without returning a value, the choice was not found
@@ -202,6 +196,12 @@ if __name__ == '__main__':
         df = pd.read_csv('eye_movements.csv', header=0, delimiter=",")
     else:
         df = pd.read_csv('Data.csv', header=0, delimiter=",")
+        df.columns = ['image_index num', 'eye fix', 'x start (pixels)', 'y start (pixels)', 'x end (pixels)',
+                      'y end (pixels)',
+                      'start diff (start trail- start event)', 'end diff (end trail- send event)',
+                      'duration of fixation',
+                      '', 'amplitude in pixels', 'amplitude in degrees', 'write peak velocity deg/s',
+                      'write average velocity deg/s', '', 'size', 'category', 'trail number']
 
         # # connect to Matlab and run the script that will create csv file of the data
         # # open the csv file and read it into a pandas data frame
@@ -210,13 +210,6 @@ if __name__ == '__main__':
         # # wait for the csv file to be created - 15 seconds should be enough
         # time.sleep(7)
 
-    # change the header of the data frame to the desired names - ['', 'eye fix', 'x start (pixels)', 'y start (pixels)', 'x end (pixels)', 'y end (pixels)', 'start diff (start trail- start event)','end diff (end trail- send event)'
-    # ,'duration of fixation', 'amplitude in pixels', 'amplitude in degrees', 'write peak', 'velocity deg/s', 'write average velocity deg/s', 'trail number']
-    df.columns = ['image_index num', 'eye fix', 'x start (pixels)', 'y start (pixels)', 'x end (pixels)',
-                  'y end (pixels)',
-                  'start diff (start trail- start event)', 'end diff (end trail- send event)', 'duration of fixation',
-                  '', 'amplitude in pixels', 'amplitude in degrees', 'write peak velocity deg/s',
-                  'write average velocity deg/s', '', 'size', 'category', 'trail number']
     # use the load pictures to load a list of all the images in the folder
     path = input("please enter the path of the images data set: ")
     images = load_data_pics(path)
@@ -227,28 +220,26 @@ if __name__ == '__main__':
         # in df search for the image index and from the line of the index bring me the trail number
         # Search for the image index in the DataFrame
         matching_row = df[df['image_index num'] == image_idx]
-        print(matching_row)
         trail_number = matching_row.loc[:, 'trail number'].values[0].T
 
         # Check if a matching row is found
-        if not matching_row.empty:
-            # Retrieve the trail number from a different column in the matching row
-            print(f"The trail number for image index {image_idx} is: {trail_number}")
-        else:
+        if matching_row.empty:
             print(f"No trail number found for image index {image_idx}")
 
-        x, y = show_image(matching_row, image_name, width, height, trail_number)
+        x, y = show_image(matching_row, image_name, width, height, trail_number, method)
         # add to Data.csv the headers from the df
         df.to_csv('Data.csv', header=True, index=False)
     else:
+        found = False
         image_index = df['image_index num'].unique()
         for image in images:
-            if image.image_id == image_index:
+            if image.image_id == image_index[0]:
+                found = True
                 image_name, width, height, image_id, image_category_id = image.image_name, image.image_size, image.image_size, image.image_id, image.image_category_id
                 chosen_image = Picture(image_name, width, height, image_id, image_category_id)
-                trail_numbers = df.loc[:, 'trail number'].values[0].T
-                x_axis_padding, y_axis_padding = show_image(df, image_name, width, height, trail_numbers)
-            else:
-                print("Image not found. Please make sure to enter a valid image ID or image name.")
+                trail_numbers = df.loc[:, 'trail number'].values.T
+                x_axis_padding, y_axis_padding = show_image(df, image_name, width, height, trail_numbers, method)
+        if not found:
+            print("Image not found. Please make sure to enter a valid image ID or image name.")
 
 
