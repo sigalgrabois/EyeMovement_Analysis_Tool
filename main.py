@@ -47,25 +47,25 @@ import seaborn as sns
 
 
 def create_heatmap(width, height, heat_fixations):
+    # Define the number of grids in x and y directions
+    grid_size = 20
+
     # Convert heat_fixations to a pandas DataFrame
     df_heatmap = pd.DataFrame(heat_fixations, columns=["x", "y"])
 
-    # Normalize x and y coordinates to the range [0, 1]
-    df_heatmap["x_normalized"] = df_heatmap["x"] / width
-    df_heatmap["y_normalized"] = df_heatmap["y"] / height
-
-    # Create a 2D histogram of the normalized coordinates
-    heatmap, x_edges, y_edges = np.histogram2d(df_heatmap["x_normalized"], df_heatmap["y_normalized"], bins=100)
+    # Create a 2D histogram of the fixations
+    heatmap, xedges, yedges = np.histogram2d(df_heatmap["x"], df_heatmap["y"], bins=grid_size, range=[[0, width], [0, height]])
 
     # Create a DataFrame from the heatmap values
-    df_heatmap = pd.DataFrame(heatmap, index=x_edges[:-1], columns=y_edges[:-1])
+    df_heatmap = pd.DataFrame(heatmap, index=range(grid_size), columns=range(grid_size))
 
     # Create a heatmap plot using seaborn
     plt.figure(figsize=(8, 6))
-    sns.heatmap(df_heatmap, cmap="hot", square=True, cbar=False)
+    sns.heatmap(df_heatmap, square=True, cbar=True, xticklabels=False, yticklabels=False)
     plt.title("Eye Movement Heatmap")
-    plt.xlabel("X Coordinate")
-    plt.ylabel("Y Coordinate")
+    plt.xlabel("Grid X Coordinate")
+    plt.ylabel("Grid Y Coordinate")
+    plt.imshow(heatmap, extent=[xedges[0], xedges[-1], yedges[0], yedges[-1]], cmap='hot', alpha=0.7)
     plt.show()
 
 
