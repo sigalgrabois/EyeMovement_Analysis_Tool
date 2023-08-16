@@ -1,0 +1,456 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>ExtractDataEDFv_2</title><meta name="generator" content="MATLAB 9.9"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2023-07-25"><meta name="DC.source" content="ExtractDataEDFv_2.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput"><span class="comment">% Sigal and Shachar - Final project import data from EDF files</span>
+<span class="comment">% this script takes the edf files and creates a data.csv file</span>
+
+<span class="comment">% clear the variabls and close all.</span>
+clear;
+close <span class="string">all</span>;
+<span class="comment">% create gui to ask from the user the edf file</span>
+    <span class="comment">% Select a file</span>
+    [fileName, folderName] = uigetfile(<span class="string">'*.edf'</span>);
+<span class="comment">% first we use edfImport in order to create the Trails struct with the</span>
+<span class="comment">% experiment data</span>
+Trials= edfImport(fileName);
+iblock=1;
+iday =1;
+
+<span class="comment">% loading mat files of subjects instead of edf files (this demands</span>
+<span class="comment">%     edfImport manually for each edf separatly and saving the .mat of</span>
+<span class="comment">%     imported data (saving as: trials = edfImport('AI6317_1.edf',[1 1 1])-&gt;  save('AI6317_1.mat','trials')</span>
+<span class="comment">%convertEDFtoMAT('C:\Users\User\Documents\third_year\FINALPROJECT\trail0data');</span>
+<span class="comment">% split into 2 trails -</span>
+</pre><pre class="codeoutput error">Error using edfImport (line 56)
+Filename argument must be a string
+
+Error in ExtractDataEDFv_2 (line 12)
+Trials= edfImport(fileName);
+</pre><p>Define trials</p><pre class="codeinput">            WhichTrial  = 2;   <span class="comment">% we know it's always second trial with all participants</span>
+            OnsetIdx    = find(contains(Trials(WhichTrial).Events.message,<span class="string">'TRIGGER'</span>));   <span class="comment">% search for trigger message - index of onset of trial</span>
+            OffsetIdx   = find(contains(Trials(WhichTrial).Events.message,<span class="string">'END_TRIAL'</span>)); <span class="comment">% search for end_trial message - index of offset of trial</span>
+
+            assert(size(OnsetIdx,2)==size(OffsetIdx,2),<span class="string">'Error: Onset and offset doesnt match - check missing messages?'</span>) <span class="comment">% does onset and offset match?</span>
+            <span class="comment">% list of images participant viewed by order of presentation</span>
+            end_trial_msg = Trials(WhichTrial).Events.message(OffsetIdx);   <span class="comment">%  extract END_TRIAL messages</span>
+            strt_trial_msg = Trials(WhichTrial).Events.message(OnsetIdx);   <span class="comment">%  extract END_TRIAL messages</span>
+
+            <span class="keyword">for</span> iimg = 1:size(end_trial_msg,2)
+                img_dtlsEnd(:,iimg) = split (end_trial_msg(1,iimg));    <span class="comment">% extracting image manes from END_TRIAL messages by order of presentation</span>
+                img_dtlsTrigger(:,iimg) = split (strt_trial_msg(1,iimg));   <span class="comment">%  extracting image size and category from TRIGGER  messages</span>
+            <span class="keyword">end</span>
+            img_NameOrder (:,1) = img_dtlsEnd(10,:)';    <span class="comment">% names of the images participant viewed by presentation order</span>
+            img_NameOrder (:,2:3) = img_dtlsTrigger([3 8],:)';    <span class="comment">% size and category of images by presentation order</span>
+            <span class="comment">% handle images that have 1 instead of 112 in size col (becuase of mistake in p.file , gx was gx=1 instead of gx=112)</span>
+            <span class="keyword">if</span> sum (convertCharsToStrings(img_NameOrder (:,3)) == convertCharsToStrings(<span class="string">'1.00'</span>) )&gt;0
+                indxCorrSize = find(convertCharsToStrings(img_NameOrder (:,3)) == convertCharsToStrings(<span class="string">'1.00'</span>));
+                img_NameOrder (indxCorrSize,3) = {<span class="string">'112.00'</span>};
+            <span class="keyword">end</span>
+
+
+
+
+            <span class="comment">% loop through events and find valid trials</span>
+            counter = 1;
+            ifix =  1;     <span class="comment">% increase event number</span>
+
+            <span class="keyword">for</span> ievent = 1:size(Trials(WhichTrial).Events.message,2)  <span class="comment">% loop through all events</span>
+                <span class="comment">% for ievent = 2:size(Trials(WhichTrial).Events.message,2)+1   % to use if using both start event 7 and end event 8 to define fixations</span>
+                <span class="keyword">for</span> itrial = 1:size(OnsetIdx,2) <span class="comment">% get only trials of interest</span>
+
+                    <span class="comment">% here the type of event you want to get is given, 7=start</span>
+                    <span class="comment">% fixation, 8=end fixation, both must fit in the onset and offset</span>
+                    <span class="comment">% of trials</span>
+                    <span class="keyword">if</span>  (   ( Trials(WhichTrial).Events.type(ievent) == 7 || Trials(WhichTrial).Events.type(ievent) == 8 )   &amp;&amp; <span class="keyword">...</span>
+                            (ievent &gt; OnsetIdx(itrial)    &amp;&amp; ievent &lt; OffsetIdx(itrial) )   ) &amp;&amp; <span class="keyword">...</span>
+                            ( Trials(WhichTrial).Events.eye(ievent)== 0)   <span class="comment">% left eye data only</span>
+
+                        <span class="comment">%  if (Trials(WhichTrial).Events.type(ievent) == 8 &amp;&amp; ievent &gt;= OnsetIdx(itrial)) ...</span>
+                        <span class="comment">%          &amp;&amp; ( Trials(WhichTrial).Events.type(ievent) == 8 &amp;&amp; ievent &lt;= OffsetIdx(itrial)) ...</span>
+                        <span class="comment">%           &amp;&amp;  ( Trials(WhichTrial).Events.eye(ievent)== 0)   % left eye data only</span>
+
+
+
+                        fix_gstx   = Trials(WhichTrial).Events.gstx(ievent);  <span class="comment">% start x position</span>
+                        fix_gsty   = Trials(WhichTrial).Events.gsty(ievent);  <span class="comment">% start y position</span>
+                        fix_genx   = Trials(WhichTrial).Events.genx(ievent);  <span class="comment">% end x position</span>
+                        fix_geny   = Trials(WhichTrial).Events.geny(ievent);  <span class="comment">% end y position</span>
+
+                        fix_supd_x = Trials(WhichTrial).Events.supd_x(ievent); <span class="comment">% start x in degrees</span>
+                        fix_supd_y = Trials(WhichTrial).Events.supd_y(ievent); <span class="comment">% start y in degrees</span>
+                        fix_eupd_x = Trials(WhichTrial).Events.eupd_x(ievent); <span class="comment">% end x in degrees</span>
+                        fix_eupd_y = Trials(WhichTrial).Events.eupd_y(ievent); <span class="comment">% end y in degrees</span>
+
+                        fix_sttime = Trials(WhichTrial).Events.sttime(ievent); <span class="comment">% start time of event</span>
+                        fix_entime = Trials(WhichTrial).Events.entime(ievent); <span class="comment">% end time of event</span>
+
+                        Amplitude  = sqrt((fix_genx - fix_gstx).^2 + (fix_geny - fix_gsty).^2); <span class="comment">% calculate amplitude as euclidean distance between point xStart,yStart - xEnd,yEnd</span>
+
+                        dx         = (fix_genx - fix_gstx) / ((fix_eupd_x + fix_supd_x)/2.0);   <span class="comment">% calculating amplitude in degrees per pixel as given by eyelink, upd=unitsperdegree I think</span>
+                        dy         = (fix_geny - fix_gsty) / ((fix_eupd_y + fix_supd_y)/2.0);
+                        AmplDeg    = sqrt(dx*dx + dy*dy); <span class="comment">% calculate the distance</span>
+
+                        Data(counter,18)  = itrial;  <span class="comment">% write a trial number from 1-160</span>
+                        Data(counter,2) = ifix;
+                        Data(counter,3)  = fix_gstx; <span class="comment">% write start x in pixels</span>
+                        Data(counter,4)  = fix_gsty; <span class="comment">% write start y in pixels</span>
+                        Data(counter,5)  = fix_genx; <span class="comment">% write end x in pixels</span>
+                        Data(counter,6)  = fix_geny; <span class="comment">% write end y in pixels</span>
+                        Data(counter,7)  = double(fix_sttime - Trials(WhichTrial).Events.sttime(OnsetIdx(itrial))); <span class="comment">% get onset: starttime of the event relative to start of the trial</span>
+                        Data(counter,8)  = double(fix_entime - Trials(WhichTrial).Events.sttime(OnsetIdx(itrial)));
+                        Data(counter,9)  = double(fix_entime - fix_sttime);  <span class="comment">% write duration</span>
+                        Data(counter,10) = iblock;                            <span class="comment">% block number</span>
+                        Data(counter,11)  = Amplitude;  <span class="comment">% write amplitude in pixels</span>
+                        Data(counter,12) = AmplDeg;    <span class="comment">% write amplitude in degrees</span>
+                        Data(counter,13) = Trials(WhichTrial).Events.pvel(ievent); <span class="comment">% write peak velocity deg/s</span>
+                        Data(counter,14) = Trials(WhichTrial).Events.avel(ievent); <span class="comment">% write average velocity deg/s</span>
+
+
+
+                        counter = counter + 1;  <span class="comment">% add 1 to row counter if we meet the criteria - being in the trial and having fixation</span>
+                        ifix = ifix + 1;     <span class="comment">% increase event number</span>
+
+
+                    <span class="keyword">else</span>
+                        counter = counter + 0;  <span class="comment">% dont inrease row counter if the event is not valid</span>
+
+                    <span class="keyword">end</span> <span class="comment">% if fixation</span>
+
+                <span class="keyword">end</span> <span class="comment">% i_trial</span>
+
+            <span class="keyword">end</span> <span class="comment">% i_event</span>
+</pre><p>handle unnecessary rows</p><pre class="codeinput">            IsStartProblm = Data(:,7) &gt;= 2000 | Data(:,7)==Data(:,8); <span class="comment">% if start fixation time is after image offset (2000ms)  or start fixation is equal to end fixation -&gt; dont include fixation data in table , override the data</span>
+            Data = Data(~IsStartProblm,:);
+
+            isDblFix =zeros(size(Data,1),1);
+            <span class="keyword">for</span>  i_ifix = 1:size(Data,1)-1   <span class="comment">% find fixations that appear twise - once for start (missing info) and second for end fixation - delete rows with start info only</span>
+                isDblFix (i_ifix,1) =  ( Data(i_ifix,18) == Data(i_ifix+1,18) &amp;&amp;  Data(i_ifix,7) ==  Data(i_ifix+1,7));  <span class="comment">% since start fixation does not include all fixation data and end fixation does,  if start fixation and end fixation are in the same trial  -&gt; leave only one row for fixation</span>
+            <span class="keyword">end</span>
+            Data = Data(~isDblFix,:);
+
+
+
+            <span class="comment">% fix problems with onset offset and duration of fixations</span>
+            numFix = size(Data,1);
+            <span class="keyword">for</span> i_ifix = 1:numFix   <span class="comment">% fix problems with onset offset and duration of fixations</span>
+</pre><pre class="codeinput">                <span class="keyword">if</span> Data(i_ifix,8) ==0   <span class="comment">% offset = 0  ,</span>
+                    <span class="keyword">if</span> Data(i_ifix,7) ~=0
+                        Data(i_ifix,8) = 2000;  <span class="comment">% update fixation end to 2000 (evem if it extends beyond image presentation time)</span>
+                        Data(i_ifix,9) = Data(i_ifix,8) -  Data(i_ifix,7); <span class="comment">% update fixation duration from fixation start to end</span>
+                    <span class="keyword">end</span>
+                <span class="keyword">end</span>
+
+                <span class="keyword">if</span>  Data(i_ifix,7) ==0   <span class="comment">% fixation onset = 0 &lt;- if fixation started before trial start</span>
+                    Data(i_ifix,9) = Data(i_ifix,8) -  Data(i_ifix,7);  <span class="comment">% duration should be relative to trial start and nor fixation start</span>
+                <span class="keyword">end</span>
+
+                <span class="keyword">if</span> Data(i_ifix,8) &gt;2000  <span class="comment">% fixation offset is after trial ended</span>
+                    Data(i_ifix,8) = 2000;  <span class="comment">% change fixation offset to trial end timee</span>
+                    Data(i_ifix,9) = Data(i_ifix,8) -  Data(i_ifix,7);  <span class="comment">% update fixation duration by end of trial and not end of fixation</span>
+                <span class="keyword">end</span>
+
+                <span class="keyword">if</span> Data(i_ifix,5) == 0 &amp;&amp; i_ifix &lt; numFix  <span class="comment">% if x y position of end fixation are missing, take positions from next row (since they are the same fixation, it probably started during one trial and ended in the next trial so there is a row detailing it for both trials)</span>
+                    Data(i_ifix,5) = Data(i_ifix+1,5) ;
+                    Data(i_ifix,6) = Data(i_ifix+1,6) ;
+                <span class="keyword">elseif</span> Data(i_ifix,5) == 0 &amp;&amp; i_ifix == numFix   <span class="comment">% if x y position of end fixation are missing and we dont have the next row to take the data from, than take locations from start fixation</span>
+                    Data(i_ifix,5) = Data(i_ifix,3) ;
+                    Data(i_ifix,6) = Data(i_ifix,4) ;
+                <span class="keyword">end</span>
+</pre><p>add image information to Data</p><pre class="codeinput">            <span class="keyword">for</span> iimg=1:size(end_trial_msg,2)
+                <span class="comment">% find image's index number</span>
+                load(<span class="string">'Exposure_image_indx.mat'</span>)
+                <span class="keyword">if</span> iday==1
+                    img_NameOrder(iimg,4)= Exposure_image_indx(find(contains(Exposure_image_indx(:,1), cellstr( img_NameOrder(iimg,1)))),2)  ;  <span class="comment">%find image_index number (from index list) for images by individual order of presentation</span>
+                <span class="keyword">elseif</span> iday==2
+                    img_NameOrder(iimg,4)= Test_image_indx(find(contains(Test_image_indx(:,1), cellstr( img_NameOrder(iimg,1)))),2)  ;  <span class="comment">%find image_index number (from index list) for images by individual order of presentation</span>
+                <span class="keyword">end</span> <span class="comment">% if day exposure or test</span>
+
+                <span class="keyword">if</span> strcmp(convertCharsToStrings(cellstr( img_NameOrder(iimg,2))),convertCharsToStrings(<span class="string">'Face'</span>))    <span class="comment">% assigning index numbers to categories</span>
+                    img_NameOrder(iimg,5) = {1};
+                <span class="keyword">elseif</span>    strcmp(convertCharsToStrings(cellstr( img_NameOrder(iimg,2))),convertCharsToStrings(<span class="string">'People'</span>))
+                    img_NameOrder(iimg,5) = {2};
+                <span class="keyword">elseif</span>    strcmp(convertCharsToStrings(cellstr( img_NameOrder(iimg,2))),convertCharsToStrings(<span class="string">'Indoor'</span>))
+                    img_NameOrder(iimg,5) = {3};
+                <span class="keyword">elseif</span>  strcmp(convertCharsToStrings(cellstr( img_NameOrder(iimg,2))),convertCharsToStrings(<span class="string">'Outdoor'</span>))
+                    img_NameOrder(iimg,5) = {4};
+                <span class="keyword">end</span> <span class="comment">% i_im</span>
+            <span class="keyword">end</span> <span class="comment">% categories</span>
+            im_NameOrder_Hdr = [<span class="string">"img_name"</span>,<span class="string">"category"</span>,<span class="string">"size"</span>,<span class="string">"image_index_number"</span>,<span class="string">"category_index"</span>];
+
+            <span class="comment">% adding image_index num, size and category to Data table</span>
+            <span class="keyword">for</span> i_ifix = 1:size(Data,1)
+                Data(i_ifix,1) =cell2mat(img_NameOrder(Data(i_ifix,18),4));
+                Data(i_ifix,16) = convertCharsToStrings(cell2mat(img_NameOrder(Data(i_ifix,18),3)));
+                Data(i_ifix,17) = convertCharsToStrings(cell2mat(img_NameOrder(Data(i_ifix,18),5)));
+            <span class="keyword">end</span>
+
+<span class="comment">% create a csv file from the Data struct holding the data frame</span>
+writematrix(Data, <span class="string">'Data.csv'</span>)
+</pre><pre class="codeinput">            <span class="keyword">end</span>
+
+<span class="comment">% uses data only from one eye (1 = right eye, 0 = left eye) - we will</span>
+<span class="comment">% choose 0 arbirtary</span>
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+% Sigal and Shachar - Final project import data from EDF files
+% this script takes the edf files and creates a data.csv file
+
+% clear the variabls and close all.
+clear;
+close all;
+% create gui to ask from the user the edf file
+    % Select a file
+    [fileName, folderName] = uigetfile('*.edf');
+% first we use edfImport in order to create the Trails struct with the
+% experiment data
+Trials= edfImport(fileName);
+iblock=1;
+iday =1;
+
+% loading mat files of subjects instead of edf files (this demands
+%     edfImport manually for each edf separatly and saving the .mat of
+%     imported data (saving as: trials = edfImport('AI6317_1.edf',[1 1 1])->  save('AI6317_1.mat','trials')
+%convertEDFtoMAT('C:\Users\User\Documents\third_year\FINALPROJECT\trail0data');
+% split into 2 trails -
+
+ %%
+            % Define trials
+            WhichTrial  = 2;   % we know it's always second trial with all participants
+            OnsetIdx    = find(contains(Trials(WhichTrial).Events.message,'TRIGGER'));   % search for trigger message - index of onset of trial
+            OffsetIdx   = find(contains(Trials(WhichTrial).Events.message,'END_TRIAL')); % search for end_trial message - index of offset of trial
+
+            assert(size(OnsetIdx,2)==size(OffsetIdx,2),'Error: Onset and offset doesnt match - check missing messages?') % does onset and offset match?
+            % list of images participant viewed by order of presentation
+            end_trial_msg = Trials(WhichTrial).Events.message(OffsetIdx);   %  extract END_TRIAL messages
+            strt_trial_msg = Trials(WhichTrial).Events.message(OnsetIdx);   %  extract END_TRIAL messages
+
+            for iimg = 1:size(end_trial_msg,2)
+                img_dtlsEnd(:,iimg) = split (end_trial_msg(1,iimg));    % extracting image manes from END_TRIAL messages by order of presentation
+                img_dtlsTrigger(:,iimg) = split (strt_trial_msg(1,iimg));   %  extracting image size and category from TRIGGER  messages
+            end
+            img_NameOrder (:,1) = img_dtlsEnd(10,:)';    % names of the images participant viewed by presentation order
+            img_NameOrder (:,2:3) = img_dtlsTrigger([3 8],:)';    % size and category of images by presentation order
+            % handle images that have 1 instead of 112 in size col (becuase of mistake in p.file , gx was gx=1 instead of gx=112)
+            if sum (convertCharsToStrings(img_NameOrder (:,3)) == convertCharsToStrings('1.00') )>0
+                indxCorrSize = find(convertCharsToStrings(img_NameOrder (:,3)) == convertCharsToStrings('1.00'));
+                img_NameOrder (indxCorrSize,3) = {'112.00'};
+            end
+
+
+
+
+            % loop through events and find valid trials
+            counter = 1;
+            ifix =  1;     % increase event number
+
+            for ievent = 1:size(Trials(WhichTrial).Events.message,2)  % loop through all events
+                % for ievent = 2:size(Trials(WhichTrial).Events.message,2)+1   % to use if using both start event 7 and end event 8 to define fixations
+                for itrial = 1:size(OnsetIdx,2) % get only trials of interest
+
+                    % here the type of event you want to get is given, 7=start
+                    % fixation, 8=end fixation, both must fit in the onset and offset
+                    % of trials
+                    if  (   ( Trials(WhichTrial).Events.type(ievent) == 7 || Trials(WhichTrial).Events.type(ievent) == 8 )   && ...
+                            (ievent > OnsetIdx(itrial)    && ievent < OffsetIdx(itrial) )   ) && ...
+                            ( Trials(WhichTrial).Events.eye(ievent)== 0)   % left eye data only
+
+                        %  if (Trials(WhichTrial).Events.type(ievent) == 8 && ievent >= OnsetIdx(itrial)) ...
+                        %          && ( Trials(WhichTrial).Events.type(ievent) == 8 && ievent <= OffsetIdx(itrial)) ...
+                        %           &&  ( Trials(WhichTrial).Events.eye(ievent)== 0)   % left eye data only
+
+
+
+                        fix_gstx   = Trials(WhichTrial).Events.gstx(ievent);  % start x position
+                        fix_gsty   = Trials(WhichTrial).Events.gsty(ievent);  % start y position
+                        fix_genx   = Trials(WhichTrial).Events.genx(ievent);  % end x position
+                        fix_geny   = Trials(WhichTrial).Events.geny(ievent);  % end y position
+
+                        fix_supd_x = Trials(WhichTrial).Events.supd_x(ievent); % start x in degrees
+                        fix_supd_y = Trials(WhichTrial).Events.supd_y(ievent); % start y in degrees
+                        fix_eupd_x = Trials(WhichTrial).Events.eupd_x(ievent); % end x in degrees
+                        fix_eupd_y = Trials(WhichTrial).Events.eupd_y(ievent); % end y in degrees
+
+                        fix_sttime = Trials(WhichTrial).Events.sttime(ievent); % start time of event
+                        fix_entime = Trials(WhichTrial).Events.entime(ievent); % end time of event
+
+                        Amplitude  = sqrt((fix_genx - fix_gstx).^2 + (fix_geny - fix_gsty).^2); % calculate amplitude as euclidean distance between point xStart,yStart - xEnd,yEnd
+
+                        dx         = (fix_genx - fix_gstx) / ((fix_eupd_x + fix_supd_x)/2.0);   % calculating amplitude in degrees per pixel as given by eyelink, upd=unitsperdegree I think
+                        dy         = (fix_geny - fix_gsty) / ((fix_eupd_y + fix_supd_y)/2.0);
+                        AmplDeg    = sqrt(dx*dx + dy*dy); % calculate the distance
+
+                        Data(counter,18)  = itrial;  % write a trial number from 1-160
+                        Data(counter,2) = ifix;
+                        Data(counter,3)  = fix_gstx; % write start x in pixels
+                        Data(counter,4)  = fix_gsty; % write start y in pixels
+                        Data(counter,5)  = fix_genx; % write end x in pixels
+                        Data(counter,6)  = fix_geny; % write end y in pixels
+                        Data(counter,7)  = double(fix_sttime - Trials(WhichTrial).Events.sttime(OnsetIdx(itrial))); % get onset: starttime of the event relative to start of the trial
+                        Data(counter,8)  = double(fix_entime - Trials(WhichTrial).Events.sttime(OnsetIdx(itrial)));
+                        Data(counter,9)  = double(fix_entime - fix_sttime);  % write duration
+                        Data(counter,10) = iblock;                            % block number
+                        Data(counter,11)  = Amplitude;  % write amplitude in pixels
+                        Data(counter,12) = AmplDeg;    % write amplitude in degrees
+                        Data(counter,13) = Trials(WhichTrial).Events.pvel(ievent); % write peak velocity deg/s
+                        Data(counter,14) = Trials(WhichTrial).Events.avel(ievent); % write average velocity deg/s
+
+
+
+                        counter = counter + 1;  % add 1 to row counter if we meet the criteria - being in the trial and having fixation
+                        ifix = ifix + 1;     % increase event number
+
+
+                    else
+                        counter = counter + 0;  % dont inrease row counter if the event is not valid
+
+                    end % if fixation
+
+                end % i_trial
+
+            end % i_event
+            %%
+            % handle unnecessary rows
+            IsStartProblm = Data(:,7) >= 2000 | Data(:,7)==Data(:,8); % if start fixation time is after image offset (2000ms)  or start fixation is equal to end fixation -> dont include fixation data in table , override the data
+            Data = Data(~IsStartProblm,:);
+
+            isDblFix =zeros(size(Data,1),1);
+            for  i_ifix = 1:size(Data,1)-1   % find fixations that appear twise - once for start (missing info) and second for end fixation - delete rows with start info only
+                isDblFix (i_ifix,1) =  ( Data(i_ifix,18) == Data(i_ifix+1,18) &&  Data(i_ifix,7) ==  Data(i_ifix+1,7));  % since start fixation does not include all fixation data and end fixation does,  if start fixation and end fixation are in the same trial  -> leave only one row for fixation
+            end
+            Data = Data(~isDblFix,:);
+
+
+
+            % fix problems with onset offset and duration of fixations
+            numFix = size(Data,1);
+            for i_ifix = 1:numFix   % fix problems with onset offset and duration of fixations
+                if Data(i_ifix,8) ==0   % offset = 0  ,
+                    if Data(i_ifix,7) ~=0
+                        Data(i_ifix,8) = 2000;  % update fixation end to 2000 (evem if it extends beyond image presentation time)
+                        Data(i_ifix,9) = Data(i_ifix,8) -  Data(i_ifix,7); % update fixation duration from fixation start to end
+                    end
+                end
+
+                if  Data(i_ifix,7) ==0   % fixation onset = 0 <- if fixation started before trial start
+                    Data(i_ifix,9) = Data(i_ifix,8) -  Data(i_ifix,7);  % duration should be relative to trial start and nor fixation start
+                end
+
+                if Data(i_ifix,8) >2000  % fixation offset is after trial ended
+                    Data(i_ifix,8) = 2000;  % change fixation offset to trial end timee
+                    Data(i_ifix,9) = Data(i_ifix,8) -  Data(i_ifix,7);  % update fixation duration by end of trial and not end of fixation
+                end
+
+                if Data(i_ifix,5) == 0 && i_ifix < numFix  % if x y position of end fixation are missing, take positions from next row (since they are the same fixation, it probably started during one trial and ended in the next trial so there is a row detailing it for both trials)
+                    Data(i_ifix,5) = Data(i_ifix+1,5) ;
+                    Data(i_ifix,6) = Data(i_ifix+1,6) ;
+                elseif Data(i_ifix,5) == 0 && i_ifix == numFix   % if x y position of end fixation are missing and we dont have the next row to take the data from, than take locations from start fixation
+                    Data(i_ifix,5) = Data(i_ifix,3) ;
+                    Data(i_ifix,6) = Data(i_ifix,4) ;
+                end
+
+
+                
+            %%
+            % add image information to Data
+            for iimg=1:size(end_trial_msg,2)
+                % find image's index number
+                load('Exposure_image_indx.mat')
+                if iday==1
+                    img_NameOrder(iimg,4)= Exposure_image_indx(find(contains(Exposure_image_indx(:,1), cellstr( img_NameOrder(iimg,1)))),2)  ;  %find image_index number (from index list) for images by individual order of presentation
+                elseif iday==2
+                    img_NameOrder(iimg,4)= Test_image_indx(find(contains(Test_image_indx(:,1), cellstr( img_NameOrder(iimg,1)))),2)  ;  %find image_index number (from index list) for images by individual order of presentation
+                end % if day exposure or test
+
+                if strcmp(convertCharsToStrings(cellstr( img_NameOrder(iimg,2))),convertCharsToStrings('Face'))    % assigning index numbers to categories
+                    img_NameOrder(iimg,5) = {1};
+                elseif    strcmp(convertCharsToStrings(cellstr( img_NameOrder(iimg,2))),convertCharsToStrings('People'))
+                    img_NameOrder(iimg,5) = {2};
+                elseif    strcmp(convertCharsToStrings(cellstr( img_NameOrder(iimg,2))),convertCharsToStrings('Indoor'))
+                    img_NameOrder(iimg,5) = {3};
+                elseif  strcmp(convertCharsToStrings(cellstr( img_NameOrder(iimg,2))),convertCharsToStrings('Outdoor'))
+                    img_NameOrder(iimg,5) = {4};
+                end % i_im
+            end % categories
+            im_NameOrder_Hdr = ["img_name","category","size","image_index_number","category_index"];
+
+            % adding image_index num, size and category to Data table
+            for i_ifix = 1:size(Data,1)
+                Data(i_ifix,1) =cell2mat(img_NameOrder(Data(i_ifix,18),4));
+                Data(i_ifix,16) = convertCharsToStrings(cell2mat(img_NameOrder(Data(i_ifix,18),3)));
+                Data(i_ifix,17) = convertCharsToStrings(cell2mat(img_NameOrder(Data(i_ifix,18),5)));
+            end
+
+% create a csv file from the Data struct holding the data frame
+writematrix(Data, 'Data.csv')
+            end
+
+% uses data only from one eye (1 = right eye, 0 = left eye) - we will
+% choose 0 arbirtary
+##### SOURCE END #####
+--></body></html>
