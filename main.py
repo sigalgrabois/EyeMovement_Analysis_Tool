@@ -173,8 +173,8 @@ def run_matlab_script(matlab_app):
     subprocess.call(matlab_app)
 
 
-def choose_pic(images):
-    user_choice_pic = input("Please choose a picture by the imageID or the image name: ")
+def choose_pic(images, image_category_id):
+    user_choice_pic = image_category_id
 
     for image in images:
         if image.image_id == int(user_choice_pic) or image.image_name == user_choice_pic:
