@@ -8,6 +8,7 @@ from PIL import Image, ImageTk, ImageGrab
 import subprocess
 import seaborn as sns
 
+
 from PIL.ImageDraw import ImageDraw
 import matplotlib.pyplot as plt
 
@@ -27,7 +28,6 @@ import os
 def close(ws):
     ws.destroy()
 
-
 def resize_func(canvas, image, width, height):
     resize_img = image.resize((width, width))
     img = ImageTk.PhotoImage(resize_img)
@@ -42,8 +42,6 @@ def save_image(canvas):
     img = Image.open("eyes_movement.ps")
     img.save("eyes_movement.png", "png")
 
-
-import seaborn as sns
 
 
 def create_heatmap(width, height, heat_fixations):
@@ -69,7 +67,7 @@ def create_heatmap(width, height, heat_fixations):
     plt.show()
 
 
-def show_image(df, image_path, width, height, trail_num, method):
+def show_image(df, image_path, width, height, trail_num, method, root1):
     trails_num = np.unique(trail_num)
     trail_colors = {}
     for num in trails_num:
@@ -82,16 +80,14 @@ def show_image(df, image_path, width, height, trail_num, method):
     end_x = df['x end (pixels)'].values.tolist()
     end_y = df['y end (pixels)'].values.tolist()
 
-    root = tk.Tk()
-    root.title("eyes movement")
-    root.geometry("900x900")
-    root.anchor(CENTER)
+    root1.geometry("900x900")
+    root1.anchor(CENTER)
 
     # add a button to save the image with the trails on it
-    button = tk.Button(root, text="Save Image", command=lambda: save_image(canvas))
+    button = tk.Button(root1, text="Save Image", command=lambda: save_image(canvas1))
     button.pack(side="top", fill="both", expand="yes", padx="10", pady="10")
     # add a button to create a heatmap of the trails on the image
-    button = tk.Button(root, text="Create Heatmap",
+    button = tk.Button(root1, text="Create Heatmap",
                        command=lambda: create_heatmap(new_width, new_height, heatmap_points))
     button.pack(side="top", fill="both", expand="yes", padx="10", pady="10")
     image_path = image_path.replace("'", "")
@@ -104,11 +100,11 @@ def show_image(df, image_path, width, height, trail_num, method):
     # image = Image.open(image_path)
     img = image.resize((new_width, new_height))
     my_img = ImageTk.PhotoImage(img)
-    screen_width = root.winfo_screenwidth()
-    screen_height = root.winfo_screenheight()
-    canvas = tk.Canvas(root, width=screen_width, height=screen_height)
-    canvas.create_image(0, 0, anchor=NW, image=my_img)
-    canvas.pack()
+    screen_width = root1.winfo_screenwidth()
+    screen_height = root1.winfo_screenheight()
+    canvas1 = tk.Canvas(root1, width=screen_width, height=screen_height)
+    canvas1.create_image(0, 0, anchor=NW, image=my_img)
+    canvas1.pack()
 
     size_list = [900, 450, 225, 112]
     scale_factors = [1, 2, 4, 8.0357]
@@ -155,18 +151,18 @@ def show_image(df, image_path, width, height, trail_num, method):
         if not_good_size:
             continue
         else:
-            canvas.create_oval(x1, y1, x2, y2, fill=color, width=4, outline=color, tags="dot", activefill=color)
+            canvas1.create_oval(x1, y1, x2, y2, fill=color, width=4, outline=color, tags="dot", activefill=color)
 
             # Draw line to previous point
             prev_x, prev_y = start[i - 1]
             prev_x, prev_y = (prev_x - x_axis_padding) / chosen_factor, (prev_y - y_axis_padding) / chosen_factor
-            canvas.create_line(prev_x, prev_y, x1, y1, width=5, fill=color)
+            canvas1.create_line(prev_x, prev_y, x1, y1, width=5, fill=color)
 
-            canvas.create_text(((x1 + prev_x) / 2) + 4, ((y1 + prev_y) / 2) - 4,
+            canvas1.create_text(((x1 + prev_x) / 2) + 4, ((y1 + prev_y) / 2) - 4,
                                text=str(int(trail_number)) + " , " + str(i),
                                fill="yellow", font="Arial 10 bold")
 
-    root.mainloop()
+    root1.mainloop()
     return x_axis_padding, y_axis_padding
 
 
@@ -191,7 +187,6 @@ def choose_pic(images):
     return None, None, None
 
 
-
 def extract_data(image_index):
     dataframes = []  # List to store DataFrames from each CSV file
 
@@ -202,17 +197,19 @@ def extract_data(image_index):
     for csv_file in csv_files:
         file_path = os.path.join('exposure_csv', csv_file)
 
-        # Read the CSV file into a DataFrame
-        df = pd.read_csv(file_path, delimiter='\t')  # Adjust the delimiter if needed
-        df.columns = ['image_index num', 'eye fix', 'x start (pixels)', 'y start (pixels)', 'x end (pixels)',
+        # Define column names
+        column_names = ['image_index num', 'eye fix', 'x start (pixels)', 'y start (pixels)', 'x end (pixels)',
                       'y end (pixels)',
                       'start diff (start trail- start event)', 'end diff (end trail- send event)',
                       'duration of fixation',
                       '', 'amplitude in pixels', 'amplitude in degrees', 'write peak velocity deg/s',
                       'write average velocity deg/s', '', 'size', 'category', 'trail number']
 
+        # Read the CSV file into a DataFrame and assign column names
+        df = pd.read_csv(file_path, delimiter='\t', header=None, names=column_names)
+
         # Filter rows with the specified image index and append to the list
-        selected_rows = df[df['image_index'] == image_index]
+        selected_rows = df[df['image_index num'] == image_index]
 
         # Add a new column 'source_csv' with the CSV file's index
         selected_rows['source_csv'] = int(csv_file.split('.')[0])  # Assuming filenames are numeric
@@ -224,13 +221,19 @@ def extract_data(image_index):
 
     return combined_df
 
+
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     # create a gui to choose the image
     method = input("choose the method: (1)one pic for one person, or (2)one pic with all the people? (1/2)")
+    # use the load pictures to load a list of all the images in the folder
+    path = input("please enter the path of the images data set: ")
+    images = load_data_pics(path)
     if method == "2":
-        image_index = input("please enter the index of the images: ")
-        df = extract_data(image_index)
+        image_name, width, height, image_id, image_category_id = choose_pic(images)
+        chosen_image = Picture(image_name, width, height, image_id, image_category_id)
+        image_idx = chosen_image.image_id
+        df = extract_data(image_idx)
     else:
         df = pd.read_csv('Data.csv', header=0, delimiter=",")
         df.columns = ['image_index num', 'eye fix', 'x start (pixels)', 'y start (pixels)', 'x end (pixels)',
@@ -240,17 +243,13 @@ if __name__ == '__main__':
                       '', 'amplitude in pixels', 'amplitude in degrees', 'write peak velocity deg/s',
                       'write average velocity deg/s', '', 'size', 'category', 'trail number']
 
+    if method == "1":  # 1 pic for one person
         # # connect to Matlab and run the script that will create csv file of the data
         # # open the csv file and read it into a pandas data frame
         # matlab_app = "ExtractDataEDFv_2_1.exe"
         # run_matlab_script(matlab_app)
         # # wait for the csv file to be created - 15 seconds should be enough
         # time.sleep(7)
-
-    # use the load pictures to load a list of all the images in the folder
-    path = input("please enter the path of the images data set: ")
-    images = load_data_pics(path)
-    if method == "1":  # 1 pic for one person
         image_name, width, height, image_id, image_category_id = choose_pic(images)
         chosen_image = Picture(image_name, width, height, image_id, image_category_id)
         image_idx = chosen_image.image_id
@@ -268,9 +267,8 @@ if __name__ == '__main__':
         df.to_csv('Data.csv', header=True, index=False)
     else:
         found = False
-        # image_index = df['image_index num'].unique()
         for image in images:
-            if image.image_id == image_index[0]:
+            if image.image_id == image_idx[0]:
                 found = True
                 image_name, width, height, image_id, image_category_id = image.image_name, image.image_size, image.image_size, image.image_id, image.image_category_id
                 chosen_image = Picture(image_name, width, height, image_id, image_category_id)
@@ -280,7 +278,7 @@ if __name__ == '__main__':
             print("Image not found. Please make sure to enter a valid image ID or image name.")
 
             # Call the function to extract data for the specified image index
-            extracted_data = extract_data(image_index)
+            extracted_data = extract_data(image_idx)
 
             # Display the extracted data
             print(extracted_data)

@@ -1,4 +1,4 @@
-ExtractDataEDFv_2_1 Executable
+ExtractDataEDFv_2 Executable
 
 1. Prerequisites for Deployment 
 
@@ -24,7 +24,7 @@ in the MathWorks Documentation Center.
 
 Files to Package for Standalone 
 ================================
--ExtractDataEDFv_2_1.exe
+-ExtractDataEDFv_2.exe
 -MCRInstaller.exe 
     Note: if end users are unable to download the MATLAB Runtime using the
     instructions in the previous section, include it when building your 

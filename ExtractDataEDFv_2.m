@@ -1,15 +1,38 @@
 % Sigal and Shachar - Final project import data from EDF files
 % this script takes the edf files and creates a data.csv file
 
-% clear the variabls and close all.
+% clear the variables and close all.
 clear;
 close all;
-% create gui to ask from the user the edf file
-    % Select a file
-    [fileName, folderName] = uigetfile('*.edf');
+
+% create a GUI to ask the user for the folder
+folderName = uigetdir('', 'Select a folder');
+
+if folderName == 0  % User canceled the folder selection
+    disp('Folder selection was canceled.');
+    return;
+end
+
+% Set the starting folder for the file dialog to the chosen folder
+startingFolder = folderName;
+
+% Specify the filter for the file dialog
+filterSpec = '*.edf';
+
+% Show the file dialog
+[fileName, folderName] = uigetfile(filterSpec, 'Select an EDF file', startingFolder);
+
+if fileName == 0  % User canceled the file selection
+    disp('File selection was canceled.');
+    return;
+end
 % first we use edfImport in order to create the Trails struct with the
 % experiment data
-Trials= edfImport(fileName);
+% Concatenate the folder and file name to create the full path
+fullFilePath = fullfile(folderName, fileName);
+
+% Use edfImport with the full file path
+Trials = edfImport(fullFilePath);
 iblock=1;
 iday =1;
 
