@@ -17,6 +17,10 @@ This is a Python-based tool for analyzing eye movement data collected during exp
 3. run the exe file in the dist folder
 4. The application will launch a graphical user interface (GUI) for interacting with eye movement data and images.
 
+## Usage
+1. Run the application by executing the main script.
+2. Run the script main.py from the cmd in the working directory.
+
 ## Features
 - **Data Loading**: Process and load eye movement data from edf files to CSV files.
 - **Image Visualization**: Display images with eye movement trails.
