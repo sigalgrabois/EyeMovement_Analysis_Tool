@@ -12,7 +12,7 @@ This is a Python-based tool for analyzing eye movement data collected during exp
 - [License](#license)
 
 ## Installation
-1. Clone this repository to your local machine:
+1. Clone this repository to your local machine: https://github.com/sigalgrabois/FinalProject.git
 2. Navigate to the project directory
 3. run the exe file in the dist folder
 4. The application will launch a graphical user interface (GUI) for interacting with eye movement data and images.
