@@ -6,7 +6,7 @@ import pandas as pd
 from numpy.core.defchararray import isdigit
 
 from PicsData import Picture, load_data_pics
-from main import choose_pic, extract_data, show_image
+from main import choose_pic, extract_data, show_image, show_image_multi
 
 
 # this function will run the app and will be called from the main.py file
@@ -25,7 +25,7 @@ def run_App():
         images = load_data_pics(data_path)
         # Ask the user for the image index
         index = simpledialog.askinteger("Input", "Enter the index of the image to display:",
-                                        parent=root, minvalue=0, maxvalue=100000000)
+                                        parent=root, minvalue=0, maxvalue=160)
 
         if index is not None:
             # Add code to display a picture for the selected participant index and dataset path
@@ -34,7 +34,6 @@ def run_App():
         else:
             print("No index entered.")
         df = pd.read_csv('Data.csv', header=0, delimiter=",")
-
 
         # Create a new window
         eye_movement_window = tk.Toplevel(root)
@@ -64,7 +63,7 @@ def run_App():
         if data_path is not None:
             # Ask the user for the image index
             index = simpledialog.askinteger("Input", "Enter the index of the image to display:",
-                                            parent=root, minvalue=0, maxvalue=100000000)
+                                            parent=root, minvalue=0, maxvalue=160)
 
             if index is not None:
                 # Add code to display a picture for the selected participant index and dataset path
@@ -74,31 +73,25 @@ def run_App():
                 print("No index entered.")
         else:
             print("No path entered.")
+
         images = load_data_pics(data_path)
-        image_name, width, height, image_id, image_category_id = choose_pic(images, index)
+        # catch exception if index is out of boundaries
+        try:
+            image_name, width, height, image_id, image_category_id = choose_pic(images, index)
+        except:
+            print("Index out of boundaries")
+            return
         chosen_image = Picture(image_name, width, height, image_id, image_category_id)
         image_idx = chosen_image.image_id
         df = extract_data(image_idx)
         # Create a new window
         eye_movement_window = tk.Toplevel(root)
         eye_movement_window.title("Eye Movement Visualization")
-        found = False
-        for image in images:
-            if image.image_id == image_idx[0]:
-                found = True
-                image_name, width, height, image_id, image_category_id = image.image_name, image.image_size, image.image_size, image.image_id, image.image_category_id
-                chosen_image = Picture(image_name, width, height, image_id, image_category_id)
-                trail_numbers = df.loc[:, 'trail number'].values.T
-                x_axis_padding, y_axis_padding = show_image(df, image_name, width, height, trail_numbers, 2, eye_movement_window)
-        if not found:
-            print("Image not found. Please make sure to enter a valid image ID or image name.")
-
-            # Call the function to extract data for the specified image index
-            extracted_data = extract_data(image_idx)
-
-            # Display the extracted data
-            print(extracted_data)
-            eye_movement_window.mainloop()
+        if df.empty:
+            print(f"No trail number found for image index {image_idx}")
+        else:
+            trail_numbers = df.loc[:, 'source_csv'].values.T
+            heatmap_points = show_image_multi(df, image_name, width, height, trail_numbers, 2, eye_movement_window)
 
     # Create the main application window
     root = tk.Tk()
