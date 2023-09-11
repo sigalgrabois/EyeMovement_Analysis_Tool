@@ -45,6 +45,8 @@ cd FinalProject
 ```
 
 ## Getting Started
+In order to run the two parts of the eye movement analysis that the tool offers, you must make sure that you have the images.xlsx file provided with the project. When you click on the "Single Participant" or "Multi Participant" button, you will first be asked to insert a path to the file containing the data of the images. You must enter images.xlsx and continue according to the instructions.
+
 1. Load Eye Movement Data:
 - Click the "Load Data" button to preprocess and load eye movement data.
 
