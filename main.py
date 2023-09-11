@@ -149,7 +149,7 @@ def show_image_multi(df, image_path, width, height, trail_num, method, root1):
                 color = trail_colors[trail_number]
             else:
                 color = default_color
-        not_good_size = (x2 - x1 > 10) or (y2 - y1 > 10)
+        not_good_size = (abs(x2 - x1) > 10) or (abs(y2 - y1) > 10)
         if not_good_size:
             continue
         else:
@@ -248,7 +248,7 @@ def show_image(df, image_path, width, height, trail_num, method, root1):
                 color = trail_colors[trail_number]
             else:
                 color = default_color
-        not_good_size = (x2 - x1 > 10) or (y2 - y1 > 10)
+        not_good_size = (abs(x2 - x1) > 10) or (abs(y2 - y1) > 10)
         if not_good_size:
             continue
         else:

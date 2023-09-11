@@ -34,6 +34,12 @@ def run_App():
         else:
             print("No index entered.")
         df = pd.read_csv('Data.csv', header=0, delimiter=",")
+        df.columns = ['image_index num', 'eye fix', 'x start (pixels)', 'y start (pixels)', 'x end (pixels)',
+                      'y end (pixels)',
+                      'start diff (start trail- start event)', 'end diff (end trail- send event)',
+                      'duration of fixation',
+                      '', 'amplitude in pixels', 'amplitude in degrees', 'write peak velocity deg/s',
+                      'write average velocity deg/s', '', 'size', 'category', 'trail number']
 
         # Create a new window
         eye_movement_window = tk.Toplevel(root)
@@ -43,6 +49,8 @@ def run_App():
         image_idx = chosen_image.image_id
         # in df search for the image index and from the line of the index bring me the trail number
         # Search for the image index in the DataFrame
+        # Check available column names
+        print(df.columns)
         matching_row = df[df['image_index num'] == image_idx]
         trail_number = matching_row.loc[:, 'trail number'].values[0].T
 
