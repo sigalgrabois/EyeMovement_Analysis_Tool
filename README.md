@@ -19,7 +19,7 @@ This is a Python-based tool for analyzing eye movement data collected during exp
 
 ## Usage
 1. Run the application by executing the main script.
-2. Run the script main.py from the cmd in the working directory.
+2. Run the script app.py from the cmd in the working directory.
 
 ## Features
 - **Data Loading**: Process and load eye movement data from edf files to CSV files.
@@ -28,6 +28,21 @@ This is a Python-based tool for analyzing eye movement data collected during exp
 - **Single Participant View**: Analyze data for a single participant.
 - **Multi-Participant View**: Analyze data for multiple participants on the same image.
 - **Data Export**: Export analyzed data and visualizations.
+
+## Running Instructions
+To use the Eye Movement Analysis Tool, follow these steps:
+1. Clone the repository to your local machine:
+ ```bash
+git clone https://github.com/your-username/your-repo.git
+```
+2. Navigate to the project directory:
+ ```bash
+cd FinalProject
+```
+3. Double click the file "EyeMovement.exe" or Run the executibule file:
+ ```bash
+   ./EyeMovement.exe
+```
 
 ## Getting Started
 1. Load Eye Movement Data:
