@@ -38,7 +38,12 @@ git clone https://github.com/sigalgrabois/FinalProject.git
  ```bash
 cd FinalProject
 ```
-3. Double click the file "EyeMovement.exe" or Run the executibule file:
+3. Navigate to the project directory App:
+ ```bash
+cd App
+```
+4. In this folder there is a zip file, extract to the file in the working folder, and choose to export it to the App folder.
+5. Double click the file "EyeMovement.exe" or Run the executibule file:
  ```bash
    ./EyeMovement.exe
 ```
