@@ -9,7 +9,6 @@ This is a Python-based tool for analyzing eye movement data collected during exp
 - [Features](#features)
 - [Getting Started](#getting-started)
 - [Contributing](#contributing)
-- [License](#license)
 
 ## Installation
 1. Clone this repository to your local machine: https://github.com/sigalgrabois/FinalProject.git
