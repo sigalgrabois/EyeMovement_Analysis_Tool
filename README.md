@@ -55,7 +55,6 @@ To run the eye movement analysis, ensure you have the `images.xlsx` file provide
 4. **Export Results**:
    - Save visualizations or analyzed data as needed.
   
-![Eye Movement Visualization](eyes_movement.png)
 
 ## Contributing
 Contributions to this project are welcome! If you'd like to contribute, please follow these steps:
