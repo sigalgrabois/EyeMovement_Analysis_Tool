@@ -11,11 +11,11 @@ This is a Python-based tool for analyzing eye movement data collected during exp
 - [Contributing](#contributing)
 
 ## Installation
-1. Clone this repository to your local machine: 
-   `https://github.com/sigalgrabois/FinalProject.git`
-2. Navigate to the project directory.
-3. Run the `EyeMovement.exe` file located in the project directory.
-4. The application will launch a graphical user interface (GUI) for interacting with eye movement data and images.
+1. Clone this repository to your local machine:
+   `https://github.com/sigalgrabois/EyeMovement_Analysis_Tool.git`
+3. Navigate to the project directory.
+4. Run the `EyeMovement.exe` file located in the project directory.
+5. The application will launch a graphical user interface (GUI) for interacting with eye movement data and images.
 
 ## Usage
 1. Run the application by executing the main script.
@@ -32,7 +32,7 @@ This is a Python-based tool for analyzing eye movement data collected during exp
 ## Running Instructions
 To use the Eye Movement Analysis Tool, follow these steps:
 1. Clone the repository to your local machine:
-   `https://github.com/sigalgrabois/FinalProject.git`
+   `https://github.com/sigalgrabois/EyeMovement_Analysis_Tool.git`
 2. Navigate to the project directory.
 3. Extract the contents of any provided zip files into the project directory, ensuring that `EyeMovement.exe` is in the correct location.
 4. Double-click the `EyeMovement.exe` file or run it from the command line:
