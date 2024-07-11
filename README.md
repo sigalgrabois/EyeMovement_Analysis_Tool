@@ -73,6 +73,20 @@ Contributions to this project are welcome! If you'd like to contribute, please f
 4. Push your changes to your fork: `git push origin feature/your-feature-name`.
 5. Open a pull request to the main repository.
 
+## results
+visualization of 1 participant with 1 picture and his eyemovements on the picture:
+<p align="center">
+  <img src="https://github.com/Shachar-Oron/Eye_movements_Analysis_tool/blob/main/WhatsApp%20Image%202024-06-30%20at%2020.44.28_3591a378.jpg?raw=true" alt="level 1" width="45%"/>
+</p>
+visualization of a heatmap next to the eye movements trajectory:
+<p align="center">
+  <img src="https://github.com/Shachar-Oron/Eye_movements_Analysis_tool/blob/main/WhatsApp%20Image%202024-06-30%20at%2020.44.52_73c5cbc0.jpg?raw=true" alt="level 1" width="45%"/>
+</p>
+visualization of a one picture with multiple eye movements of different participants:
+<p align="center">
+  <img src="https://github.com/Shachar-Oron/Eye_movements_Analysis_tool/blob/main/WhatsApp%20Image%202024-06-30%20at%2020.45.12_a922df20.jpg?raw=true" alt="level 1" width="45%"/>
+</p>
+
 ## Requirements
 - Python 3.7
 - MATLAB installed
