@@ -20,5 +20,3 @@ def batch_convert_ppm_to_png(directory):
 # Example usage
 directory = "C:/Users/User/PycharmProjects/FinalProject/ImagesAllSize900x900"
 batch_convert_ppm_to_png(directory)
-
-# Open the directory of the PNG files
