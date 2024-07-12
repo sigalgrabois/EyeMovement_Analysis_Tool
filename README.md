@@ -2,6 +2,7 @@
 
 ## Overview
 This is a Python-based tool for analyzing eye movement data collected during experiments. The tool provides functionalities to visualize eye movements on images, create heatmaps, and perform various data analysis tasks.
+This tool uses [edfImport](https://github.com/alexander-pastukhov/edfImport.git) for initial preprocessing of the data.
 
 ## Table of Contents
 - [Installation](#installation)
