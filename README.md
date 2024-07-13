@@ -1,24 +1,25 @@
 # Eye Movement Analysis Tool
 
 ## Overview
-This is a Python-based tool for analyzing eye movement data collected during experiments. The tool provides functionalities to visualize eye movements on images, create heatmaps, and perform various data analysis tasks.
+This is a Python-based tool for analyzing eye movement data collected during experiments. 
+The tool provides functionalities to visualize eye movements on images, create heatmaps, and perform various data analysis tasks.
 This tool uses [edfImport](https://github.com/alexander-pastukhov/edfImport.git) for initial preprocessing of the data.
 
 ## Table of Contents
-- [Installation](#installation)
+- [Installation - User](#installation)
 - [Usage](#usage)
 - [Features](#features)
 - [Getting Started](#getting-started)
-- [Contributing](#contributing)
 
-## Installation
+## Installation - User
 1. Clone this repository to your local machine: [https://github.com/sigalgrabois/EyeMovement_Analysis_Tool.git](https://github.com/sigalgrabois/EyeMovement_Analysis_Tool.git)
 2. Navigate to the project directory
-3. run the exe file in the dist folder
-4. The application will launch a graphical user interface (GUI) for interacting with eye movement data and images.
+3. unzip Eyemovement.zip file
+4. run the exe file in the dist folder.
+5. The application will launch a graphical user interface (GUI) for interacting with eye movement data and images.
 
 ## Usage
-1. Run the application by executing the main script.
+1. Run the application Eyemovement.exe.
 2. Run the script app.py from the cmd in the working directory.
 
 ## Features
@@ -29,28 +30,10 @@ This tool uses [edfImport](https://github.com/alexander-pastukhov/edfImport.git)
 - **Multi-Participant View**: Analyze data for multiple participants on the same image.
 - **Data Export**: Export analyzed data and visualizations.
 
-## Running Instructions
-To use the Eye Movement Analysis Tool, follow these steps:
-1. Clone the repository to your local machine:
- ```bash
-git clone https://github.com/sigalgrabois/FinalProject.git
-```
-2. Navigate to the project directory:
- ```bash
-cd FinalProject
-```
-3. Navigate to the project directory App:
- ```bash
-cd App
-```
-4. In this folder there is a zip file, extract to the file in the working folder, and choose to export it to the App folder.
-5. Double click the file "EyeMovement.exe" or Run the executibule file:
- ```bash
-   ./EyeMovement.exe
-```
-
 ## Getting Started
-In order to run the two parts of the eye movement analysis that the tool offers, you must make sure that you have the images.xlsx file provided with the project. When you click on the "Single Participant" or "Multi Participant" button, you will first be asked to insert a path to the file containing the data of the images. You must enter images.xlsx and continue according to the instructions.
+In order to run the two parts of the eye movement analysis that the tool offers, you must make sure that you have the images.xlsx file provided with the project. 
+When you click on the "Single Participant" or "Multi Participant" button, you will first be asked to insert a path to the file containing the data of the images. 
+You must enter images.xlsx and continue according to the instructions.
 
 1. Load Eye Movement Data:
 - Click the "Load Data" button to preprocess and load eye movement data.
@@ -65,14 +48,6 @@ In order to run the two parts of the eye movement analysis that the tool offers,
 
 4. Export Results:
 - Save visualizations or analyzed data as needed.
-
-## Contributing
-Contributions to this project are welcome! If you'd like to contribute, please follow these steps:
-1. Fork the repository.
-2. Create a new branch for your feature or bug fix: `git checkout -b feature/your-feature-name`.
-3. Make your changes and commit them: `git commit -m "Add your feature description"`.
-4. Push your changes to your fork: `git push origin feature/your-feature-name`.
-5. Open a pull request to the main repository.
 
 ## results
 visualization of 1 participant with 1 picture and his eyemovements on the picture:
