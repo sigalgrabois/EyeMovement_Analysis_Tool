@@ -6,12 +6,12 @@ The tool provides functionalities to visualize eye movements on images, create h
 This tool uses [edfImport](https://github.com/alexander-pastukhov/edfImport.git) for initial preprocessing of the data.
 
 ## Table of Contents
-- [Installation - User](#Installation - User)
+- [Installation - User](#Installation-User)
 - [Usage](#usage)
 - [Features](#features)
 - [Getting Started](#getting-started)
 
-## Installation - User
+## Installation-User
 1. Clone this repository to your local machine: [https://github.com/sigalgrabois/EyeMovement_Analysis_Tool.git](https://github.com/sigalgrabois/EyeMovement_Analysis_Tool.git)
 2. Navigate to the project directory
 3. unzip Eyemovement.zip file
