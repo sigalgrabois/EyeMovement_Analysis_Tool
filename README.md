@@ -6,7 +6,7 @@ The tool provides functionalities to visualize eye movements on images, create h
 This tool uses [edfImport](https://github.com/alexander-pastukhov/edfImport.git) for initial preprocessing of the data.
 
 ## Table of Contents
-- [Installation - User](#installation)
+- [Installation - User](#Installation - User)
 - [Usage](#usage)
 - [Features](#features)
 - [Getting Started](#getting-started)
