@@ -1,5 +1,6 @@
 import subprocess
 import tkinter as tk
+from datetime import time
 from tkinter import filedialog, simpledialog
 
 import pandas as pd
@@ -17,8 +18,8 @@ def run_App():
 
     def show_single_participant():
         # run the ExtractDataEDFv_2.exe file as a subprocess - this will create the Data.csv file
-        # subprocess.run("ExtractDataEDFv_2.exe")
-        # time.sleep(5)
+        subprocess.run("ExtractDataEDFv_2.exe")
+        time.sleep(5)
         # Ask the user for the path of the images dataset
         data_path = simpledialog.askstring("Input", "Enter the path of the images dataset:",
                                            parent=root)
@@ -28,8 +29,7 @@ def run_App():
                                         parent=root, minvalue=0, maxvalue=160)
 
         if index is not None:
-            # Add code to display a picture for the selected participant index and dataset path
-            # ...
+            # display a picture for the selected participant index and dataset path
             print(f"Displaying image for participant {index} from path {data_path}")
         else:
             print("No index entered.")

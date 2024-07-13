@@ -21,10 +21,7 @@ import os
 
 # TODO:
 # create a video from the images with the eye movement
-# create a heatmap from the eye movement
-# add a function to see many experimenters at the same time on the same image
 # same image with different sizes on the same window - 4 images
-# write the app itself
 
 def close(ws):
     ws.destroy()
@@ -348,10 +345,10 @@ if __name__ == '__main__':
     if method == "1":  # 1 pic for one person
         # # connect to Matlab and run the script that will create csv file of the data
         # # open the csv file and read it into a pandas data frame
-        # matlab_app = "ExtractDataEDFv_2_1.exe"
-        # run_matlab_script(matlab_app)
-        # # wait for the csv file to be created - 15 seconds should be enough
-        # time.sleep(7)
+        matlab_app = "ExtractDataEDFv_2_1.exe"
+        run_matlab_script(matlab_app)
+        # # wait for the csv file to be created - 7 seconds should be enough
+        time.sleep(7)
         image_name, width, height, image_id, image_category_id = choose_pic(images)
         chosen_image = Picture(image_name, width, height, image_id, image_category_id)
         image_idx = chosen_image.image_id
