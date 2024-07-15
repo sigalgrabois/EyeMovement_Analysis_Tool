@@ -27,7 +27,7 @@ def close(ws):
     ws.destroy()
 
 def resize_func(canvas, image, width, height):
-    resize_img = image.resize((width, width))
+    resize_img = image.resize((width, height))
     img = ImageTk.PhotoImage(resize_img)
     canvas.config(image=img)
     canvas.image = img
